@@ -7,8 +7,8 @@
         weight : 0.5,
         size : 1.5,
         z_axis_rate : 0.05,
-        color : {b : 255, a: 0.8},
-        wind : 0
+        color : {b : 255, a: 0.5},
+        wind : 1
     };
     window.animation_config.isRunning = true;
     
