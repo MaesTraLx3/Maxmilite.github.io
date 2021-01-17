@@ -32,15 +32,15 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         screenBounds.upper = canvas.width;
-        init();
-        animate();
+        // init();
+        // animate();
     };
     window.onreset = function(){
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         screenBounds.upper = canvas.width;
-        init();
-        animate();
+        // init();
+        // animate();
     };
 
     // Waiting for recoding.
