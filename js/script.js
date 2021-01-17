@@ -28,16 +28,24 @@
       //window.animation_config.isRunning = false;
     };
     
-    // window.onresize = function(){
-    //     init();
-    //     animate();
-    // };
-    // window.onreset = function(){
-    //     init();
-    //     animate();
-    // };
+    window.onresize = function(){
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        screenBounds.upper = canvas.width;
+        init();
+        animate();
+    };
+    window.onreset = function(){
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        screenBounds.upper = canvas.width;
+        init();
+        animate();
+    };
 
     // Waiting for recoding.
+    // Recoded 2021-1-17 17:06
+
 
     let particleArray = [];
     
