@@ -28,6 +28,17 @@
       //window.animation_config.isRunning = false;
     };
     
+    // window.onresize = function(){
+    //     init();
+    //     animate();
+    // };
+    // window.onreset = function(){
+    //     init();
+    //     animate();
+    // };
+
+    // Waiting for recoding.
+
     let particleArray = [];
     
     function randomInt(min = 0, max = 1){
@@ -120,7 +131,7 @@
         }
         requestAnimationFrame(animate);
     }
-    
+
     init();
     animate();
 })();
