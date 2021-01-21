@@ -18,9 +18,8 @@ canvas{
   background: linear-gradient(#e66465, #9198e5);
 }
 *{ margin: 0; padding: 0; list-style: none; }
-.nav {background: skyblue; margin: 100px auto; text-align: center; line-height: 40px; }
 a { color: #fff; text-decoration: none; }
-/* .nav li { width: 100px; height: 40px; background: skyblue; }
-.nav>li { float: left; margin-right: 10px;  }
-.nav>li:last-child { margin-right: 0; }
-.nav li ul { position: absolute; height: 0; overflow: hidden; transition: height 0.5s; } */
+ul,li{list-style: none;}
+.wrap{}
+.nav{overflow: hidden;}
+.nav li{width: 20%; height: 50px; line-height: 50px; text-align: center; background: white; color: black; float: left;}
