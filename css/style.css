@@ -1,8 +1,7 @@
 html,body{
-  /* margin: 0;
-  padding:0; 
+  margin: 0;
+  padding: 0;
   height: 100%;
-  background: rgb(0, 0, 0); */
   color: white;
   /* top: 0;
   left: 0; */
@@ -20,6 +19,55 @@ canvas{
 *{ margin: 0; padding: 0; list-style: none; }
 a { color: #fff; text-decoration: none; }
 ul,li{list-style: none;}
-.wrap{}
 .nav{overflow: hidden;}
-.nav li{width: 20%; height: 50px; line-height: 50px; text-align: center; background: white; color: black; float: left;}
+.nav li
+{
+  width: 20%; 
+  height: 50px; 
+  line-height: 50px; 
+  text-align: center; 
+  background: white; 
+  color: black; 
+  float: left; 
+}
+.nav img
+{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  float: left;
+  margin-left: 10px;
+}
+.nav p
+{
+  float: left;
+}
+.button
+{
+    background-color: white;
+    color: black;
+    transition: 0.3s;
+}
+.button a
+{
+  color: currentColor;
+}
+.button:hover
+{
+    background-color: black;
+    color: white;
+    transform: translate();
+}
+.bottom
+{
+  /* border-style: groove; */
+  width: 25%; 
+  height: 100px; 
+  background: white; 
+  opacity: 0.4;
+  color: black; 
+  float: left;
+}
+.bottom ul
+{
+  list-style: square;
+}
