@@ -28,6 +28,9 @@ ul,li{list-style: none;}
 .nav p
 {
   float: left;
+  position: relative;
+  text-align: center;
+  vertical-align: center;
 }
 .button
 {

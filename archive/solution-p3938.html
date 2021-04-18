@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxmilite</title>
+    <link rel="icon" href="../icon.png" type="image/x-icon">
+</head>
+
+<link rel="stylesheet" href="../css/style-archive.css">
+
+<canvas id="snow-flake-app"></canvas>
+<script src="../js/snow-flake-app.js"></script>
+
+<!-- <ul class="nav">
+    <li style="width: 40%;">
+        <div>
+            <p style="font-size: xx-large;"><img src="../icon.png" height="40px" width="40px"
+                    style="border-radius: 4px;">&nbsp;Maxmilite</p>
+        </div>
+    </li>
+</ul> -->
+
+<div class="main">
+    <h1 style="text-align: center;">
+        题解 P3938 【斐波那契】
+    </h1>
+</div>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<xmp theme="united" style="display:none;" id="section">
+### 这篇教程会告诉你从零开始思考的历程
+
+### （可能会是讲的最啰嗦的题解了罢）
+
+### （不过会很易懂）
+
+### 在重点语句处存在下标，体现代码中的语句，便于理解
+
+观察一下不难发现：
+
+用$Rabbit_x$ 表示第 $x$ 天可生兔的兔数量
+
+$Rabbit_1$ = 1
+
+$Rabbit_2$ = 1
+
+对于 $Rabbit_x$
+
+因为第 $x$ 天，$x - 2$ 天生的兔子可以生了，并且 $x - 1$ 天的兔子自己还能生
+
+所以有 $x$ 天比 $x - 1$ 有多出来的可生的兔子 $ = $ $ x - 2 $
+
+所以能推导出下面的公式：
+
+**$Rabbit_x = Rabbit_{x - 1} + Rabbit_{x - 2}$**
+
+....
+
+这不就是**斐波那契数列**嘛
+
+**所以在程序的开始，我们先打个表$_{(1)}$**
+
+------------
+
+知道了上面的结论以后，我们可以做进一步推算
+
+在第 $x$ 天总共有 $Rabbit_x$ 只可生的兔子和 $Rabbit_{x - 1}$ 只前一天生的还没有生育能力的兔子
+
+在第 $x$ 天可以生出来 $Rabbit_x$ 只兔子
+
+所以这 $Rabbit_x$ 只兔子如何标号呢？
+
+$Rabbit_x + Rabbit_{x - 1} + 1$ $\rightarrow$ $Rabbit_x + Rabbit_x + Rabbit_{x - 1} + 1$
+
+对于 $Rabbit_x + Rabbit_{x - 1} + 1$ ~~她~~的母亲的编号是 $1$
+
+对于 $Rabbit_x + Rabbit_x + Rabbit_{x - 1} + 1$~~她~~的母亲的编号是 $Rabbit_x$
+
+而$Rabbit_x + Rabbit_{x - 1} = Rabbit_{x + 1}$
+
+$Rabbit_x + Rabbit_x + Rabbit_{x - 1} = Rabbit_{x + 2}$
+
+而对于其中编号为 ${x} (x ∈ (Rabbit_{x + 1} + 1, Rabbit_{x + 2} + 1))$的兔子 , 可以求得~~她~~的母亲的编号是：
+
+$x - Rabbit_{x + 1}$
+
+
+...
+
+又一个奇怪的结论增加了
+
+------------
+
+知道了上面的结论以后，我们又可以做进一步推算
+
+对于两个兔子 $a,b$
+
+**编号大的辈数一定不小于编号小的$_{(3)}$**
+
+我们需要先找到~~她~~俩所在的编号范围
+
+**所以我们可以从编号大的求他的母亲$_{(4)}$**
+
+然后如此反复
+
+反复下去，反复下去
+
+**总有一天，终将会找到他的祖先$_{(2)}$**
+
+~~（泪目）~~
+
+---
+
+### _AC Code_
+
+```cpp
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+long long m, a, b;
+long long fibor[] = {1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155, 165580141, 267914296, 433494437, 701408733, 1134903170, 1836311903, 2971215073, 4807526976, 7778742049, 12586269025, 20365011074, 32951280099, 53316291173, 86267571272, 139583862445, 225851433717, 365435296162, 591286729879, 956722026041, 1548008755920};
+//(1) 打一个斐波那契数列表 作用上文已阐述
+int main()
+{
+    scanf("%lld", &m); // 读入数据组数
+    while (m--)
+    {
+        scanf("%lld%lld", &a, &b); // 读入a,b
+        while (a != b) // (2) 如果 a 与 b 相同，说明已经找到了他们的祖先
+        {
+            if (a > b) // (3) 比较编号大小
+                a -= (*(lower_bound(fibor, fibor + 58, a) - 1)); 
+               	// (4) 找妈妈 直接用妈妈的编号覆盖崽的编号
+            else
+                b -= (*(lower_bound(fibor, fibor + 58, b) - 1));
+                 // (4) 找妈妈 直接用妈妈的编号覆盖崽的编号
+        }
+        printf("%lld\n",a); // 祖先找到了 输出祖先
+    }
+    return 0;
+}
+```
+</xmp>
+
+
+<script src="strapdown/v/0.2/strapdown.js"></script>
+
+<div>
+    <!-- Button Here -->
+    <!-- Fixed Button 2021-04-18-->
+    <a class="button" href="../archives.html" style="width: 40%; border-radius: 8px; margin-left: 30%; margin-top: 100px;  margin-bottom: 40px">
+        <p style="font-size: 2vmax;">
+            <<< Return to archive list </p>
+    </a>
+</div>
+
+</html>

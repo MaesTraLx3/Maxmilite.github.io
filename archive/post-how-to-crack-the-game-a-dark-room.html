@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxmilite</title>
+    <link rel="icon" href="../icon.png" type="image/x-icon">
+</head>
+
+<link rel="stylesheet" href="../css/style-archive.css">
+
+<canvas id="snow-flake-app"></canvas>
+<script src="../js/snow-flake-app.js"></script>
+
+<!-- <ul class="nav">
+    <li style="width: 40%;">
+        <div>
+            <p style="font-size: xx-large;"><img src="../icon.png" height="40px" width="40px"
+                    style="border-radius: 4px;">&nbsp;Maxmilite</p>
+        </div>
+    </li>
+</ul> -->
+
+<div class="main">
+    <h1 style="text-align: center;">
+        [分享] 如何破解网页小游戏 A Dark Room
+    </h1>
+</div>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<xmp theme="united" style="display:none;" id="section">
+## 声明：作者不赞成诸如此类投机取巧，通过修改游戏程序来达到目的的行为
+
+### 本篇文章只作为心得体会分享
+
+
+某日，某人在机房~~颓废~~的时候看到了这样一个[网页小游戏](https://adarkroom.doublespeakgames.com/?lang=zh_cn)。
+
+![Game photo](https://s3.ax1x.com/2021/03/07/6K6kR0.png)
+
+然后某人就本能地点下了“生火”。
+
+![Cooldown](https://s3.ax1x.com/2021/03/07/6K6Ko9.png)
+
+>_某人：”这个读条好慢阿。“_
+
+然后某人又很自然的跟着剧情去 “伐木”。
+
+![Cutting Wood](https://s3.ax1x.com/2021/03/07/6K6BWt.png)
+
+>_某人：”这个读条更慢了阿（恼）。“_
+
+鲁迅曾说过，时间不是用来看读条上的。
+
+所以某人为了秉承鲁迅先生的志向，决定看看有没有什么方法破解掉读条。
+
+由于某人之前学过写一点 HTML，所以就本能的打开了 F12。
+
+![Not in cooldown](https://s3.ax1x.com/2021/03/07/6K6UdH.png)
+
+可以看到，这个“添柴”的按钮是属于一个叫 `stokeButton` 的元素，目前他所引用的 class 是 `button`。
+
+当按下“添柴”按钮之后，
+
+[![6KcAkd.png](https://s3.ax1x.com/2021/03/07/6KcAkd.png)](https://imgtu.com/i/6KcAkd)
+
+class 又附加上了一个 `disabled`。
+
+>disabled　
+>
+>英 [dɪs'eɪbld] 　 　 美 [dɪs'eɪbld] 　 　
+>
+>adj. 关闭的
+
+所以，我们只要删除这个 `disabled` 标签，我们就可以在读条结束之前再一次点击按钮了！
+
+[![6K29de.gif](https://s3.ax1x.com/2021/03/07/6K29de.gif)](https://imgtu.com/i/6K29de)
+
+>_某人：”但是这还是很麻烦阿（恼）。“_
+
+于是我看了以下这个元素的事件触发器，
+
+[![6K2eL8.png](https://s3.ax1x.com/2021/03/07/6K2eL8.png)](https://imgtu.com/i/6K2eL8)
+
+可以看到，当点击按钮的时候，他会触发 `Button.js` 里的一个 function。
+
+某人将这一段 function 截取了下来。
+
+```javascript
+1	var el = $('<div>')
+2		.attr('id', typeof(options.id) != 'undefined' ? options.id : "BTN_" + Engine.getGuid())
+3		.addClass('button')
+4		.text(typeof(options.text) != 'undefined' ? options.text : "button")
+5		.click(function() {
+6			if(!$(this).hasClass('disabled')) {
+7				Button.cooldown($(this));
+8				$(this).data("handler")($(this));
+9			}
+10		})
+11		.data("handler",  typeof options.click == 'function' ? options.click : function() { Engine.log("click"); })
+13		.data("remaining", 0)
+14		.data("cooldown", typeof options.cooldown == 'number' ? options.cooldown : 0);
+15		el.append($("<div>").addClass('cooldown'));
+```
+
+可以看到，在第 5 行，当点击时会触发一次判断。
+
+当这个元素没有标签 `disabled` 时，就触发一次冷却。
+
+当触发冷却后，理所应当的按钮就被加上 `disabled` 标签了。
+
+所以我们可以**把这一句给注释掉**，这样他不就触发不了 `cooldown` 了吗？
+
+```javascript
+1	var el = $('<div>')
+2		.attr('id', typeof(options.id) != 'undefined' ? options.id : "BTN_" + Engine.getGuid())
+3		.addClass('button')
+4		.text(typeof(options.text) != 'undefined' ? options.text : "button")
+5		.click(function() {
+6			if(!$(this).hasClass('disabled')) {
+7				// Button.cooldown($(this));
+8				$(this).data("handler")($(this));
+9			}
+10		})
+11		.data("handler",  typeof options.click == 'function' ? options.click : function() { Engine.log("click"); })
+13		.data("remaining", 0)
+14		.data("cooldown", typeof options.cooldown == 'number' ? options.cooldown : 0);
+15		el.append($("<div>").addClass('cooldown'));
+```
+
+这之后，
+
+[![6KRQ0O.gif](https://s3.ax1x.com/2021/03/07/6KRQ0O.gif)](https://imgtu.com/i/6KRQ0O)
+
+有效！
+
+---
+
+我们完成了破解掉这个游戏的第一个关卡。
+
+那么我们现在不妨换一个思路。
+
+触发 `cooldown` 和添加 `disabled` 之间必然存在一步。
+
+我们找到那一步改掉，也可以直接干掉冷却时间。
+
+[![6KRNct.png](https://s3.ax1x.com/2021/03/07/6KRNct.png)](https://imgtu.com/i/6KRNct)
+
+在一个叫做 `setDisabled` 里的函数，有一句
+`btn.addClass('disabled');`
+
+同样的语句在 `Button.js` 里存在两处。
+
+如果我们把这两句注释掉的话...
+
+[![6KRfBT.gif](https://s3.ax1x.com/2021/03/07/6KRfBT.gif)](https://imgtu.com/i/6KRfBT)
+
+好耶！
+
+虽然和上面的效果不大一样，但是还是做到了取消冷却。
+
+---
+
+把冷却时间干掉以后，如果配合连点器，那么我们会得到惊人的产出。
+
+[![6K4aGQ.gif](https://s3.ax1x.com/2021/03/07/6K4aGQ.gif)](https://imgtu.com/i/6K4aGQ)
+
+~~我不玩了我电脑要炸了~~
+
+---
+
+连载中
+
+Updated on 2021-03-07
+
+</xmp>
+
+
+<script src="strapdown/v/0.2/strapdown.js"></script>
+
+<div>
+    <!-- Button Here -->
+    <!-- Fixed Button 2021-04-18-->
+    <a class="button" href="../archives.html" style="width: 40%; border-radius: 8px; margin-left: 30%; margin-top: 100px;  margin-bottom: 40px">
+        <p style="font-size: 2vmax;">
+            <<< Return to archive list </p>
+    </a>
+</div>
+
+</html>

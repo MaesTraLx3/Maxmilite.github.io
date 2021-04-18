@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxmilite</title>
+    <link rel="icon" href="../icon.png" type="image/x-icon">
+</head>
+
+<link rel="stylesheet" href="../css/style-archive.css">
+
+<canvas id="snow-flake-app"></canvas>
+<script src="../js/snow-flake-app.js"></script>
+
+<!-- <ul class="nav">
+    <li style="width: 40%;">
+        <div>
+            <p style="font-size: xx-large;"><img src="../icon.png" height="40px" width="40px"
+                    style="border-radius: 4px;">&nbsp;Maxmilite</p>
+        </div>
+    </li>
+</ul> -->
+
+<div class="main">
+    <h1 style="text-align: center;">
+        题解 CF1062A 【A Prank】
+    </h1>
+</div>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<xmp theme="united" style="display:none;" id="section">
+本题解与其他题解思路不同
+
+## Explanation
+
+
+对于某个序列，找出一个最大的子序列，保证该子序列位置不存在其他可能序列。
+
+坑点来了:
+
+> 序列需要满足如下要求：
+> - 序列必须是**连续**的**一个**子序列
+> - 序列中的元素 $x$ 满足 **$x \in [1,10 ^ 3]$**
+
+~~这个题意搞了半天没读懂什么意思..去了趟厕所回来才醒悟~~
+
+![血泪史 (大哭)](https://cdn.luogu.com.cn/upload/image_hosting/luigiegs.png)
+血泪史 (大哭)
+
+## Solution
+
+实际上我们不难发现，如果一段序列 $a_l \sim a_r$ 是可以删除的话，那么我们只要保证 $a_{l - 1}$ 和 $a_{r + 1}$ 的差值为 $(r + 1) - (l - 1) + 1$ 即可
+
+所以不难找出方法：
+
+**对于 $i \in [1 , n]$，找出每个 $a_i$ 所能删除的最大子区间**
+
+所以我们只要对每个 $a_r, r \in [1 , n]$ 枚举左端点就可以了
+
+对于可行的左端点 $a_l$ 满足区间长度为 $r - l - 1$
+
+注意特判两个边界 $1$ 和 $1000$
+> 序列中的元素 $x$ 满足 **$x \in [1,10 ^ 3]$**
+
+用 $f_i$ 记录 $a_i$ 的区间长度，最后取最大值就可以了
+
+## AC Code _(C language)_
+
+```cpp
+#include <stdio.h>
+int a[105], ans, n, f[105];
+inline void solve()
+{
+	
+	a[n + 1] = 1001;
+	for(int i = 1; i <= n + 1; ++i)
+	{
+		for(int j = 0; j < i; ++j)
+			if(a[i] - a[j] == i - j)
+				f[i] = i - j - 1 > f[i] ? i - j - 1 : f[i];
+	}
+	for(int i = 1;i <= n + 1; ++i)
+		ans = f[i] > ans ? f[i] : ans;
+}
+int main()
+{
+	scanf("%d", &n);
+	for(int i = 1;i <= n;++i)
+		scanf("%d", &a[i]);
+	solve();
+	printf("%d\n", ans);
+	return 0;
+}
+```
+</xmp>
+
+
+<script src="strapdown/v/0.2/strapdown.js"></script>
+
+<div>
+    <!-- Button Here -->
+    <!-- Fixed Button 2021-04-18-->
+    <a class="button" href="../archives.html" style="width: 40%; border-radius: 8px; margin-left: 30%; margin-top: 100px;  margin-bottom: 40px">
+        <p style="font-size: 2vmax;">
+            <<< Return to archive list </p>
+    </a>
+</div>
+
+</html>
