@@ -1,8 +1,8 @@
-html
-{
+html {
   height: 100%
 }
-canvas{
+
+canvas {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,48 +10,66 @@ canvas{
   height: 100%;
   z-index: -1;
   /* background: rgb(14, 150, 184); */
-  background: linear-gradient(#e66465, #9198e5);
-  opacity: 50%;
+  background: linear-gradient(#e49e9e, #bdc0e2);
+  /* opacity: 50%; */
 }
-*{ margin: 0; padding: 0; list-style: none; }
-a { color: #fff; text-decoration: none; }
-a :visited {color: white}
-ul,li{list-style: none;}
-.nav{overflow: hidden;}
-.nav img
-{
+
+* {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+a :visited {
+  color: white
+}
+
+ul, li {
+  list-style: none;
+}
+
+.nav {
+  overflow: hidden;
+}
+
+.nav img {
   margin-top: 5px;
   margin-bottom: 5px;
   float: left;
   margin-left: 10px;
 }
-.nav p
-{
+
+.nav p {
   float: left;
   position: relative;
   text-align: center;
   vertical-align: center;
 }
-.button
-{
-    width: 100%; 
-    height: 50px; 
-    line-height: 50px; 
-    text-align: center; 
-    background: white; 
-    color: black; 
-    float: left;
-    background-color: white;
-    color: black;
-    transition: 0.3s;
+
+.button {
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  background: white;
+  color: black;
+  float: left;
+  background-color: white;
+  color: black;
+  transition: 0.3s;
 }
-.button a
-{
+
+.button a {
   color: currentColor;
 }
-.button:hover
-{
-    background-color: black;
-    color: white;
-    transform: translate();
+
+.button:hover {
+  background-color: black;
+  color: white;
+  transform: translate();
 }
