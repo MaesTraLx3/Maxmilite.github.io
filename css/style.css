@@ -148,7 +148,7 @@ ul, li {
   font-weight: 900;
 }
 
-#titleend {
+/* #titleend {
   animation: titleend 10s infinite;
   background-color: hsla(0, 100%, 100%, 0.5);
   margin: 10px 10px;
@@ -190,4 +190,4 @@ ul, li {
   100% {
     color: hsla(0, 100%, 55%, 1)
   }
-}
+} */
