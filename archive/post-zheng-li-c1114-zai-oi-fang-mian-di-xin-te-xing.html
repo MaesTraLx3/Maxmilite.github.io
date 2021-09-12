@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxmilite</title>
+    <link rel="icon" href="../icon.png" type="image/x-icon">
+</head>
+
+<link rel="stylesheet" href="../css/style-archive.css">
+
+<canvas id="snow-flake-app"></canvas>
+<script src="../js/snow-flake-app.js"></script>
+
+<!-- <ul class="nav">
+    <li style="width: 40%;">
+        <div>
+            <p style="font-size: xx-large;"><img src="../icon.png" height="40px" width="40px"
+                    style="border-radius: 4px;">&nbsp;Maxmilite</p>
+        </div>
+    </li>
+</ul> -->
+
+<div class="main">
+    <h1 style="text-align: center;">
+        [整理] C++11/14 在 OI 方面的新特性
+    </h1>
+</div>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<xmp theme="united" style="display:none;" id="section">
+
+本文中特性按照主观的重要程度进行排列。
+
+欢迎指正、补充。
+
+### auto
+
+在 C++11 中，它可以通过**赋值**来推断变量的类型。
+
+使用例：
+
+```cpp
+auto a = 114514;
+auto b = "I AK IOI";
+```
+
+执行后，变量 `a` 就会自动被分配为整数型， `b` 为 `char` 指针（即 `char` 字符串）型。
+
+![](https://z3.ax1x.com/2021/09/12/4SRldO.png)
+
+请注意，`auto` 不能定义数组，也不能作为函数的参数。 
+
+而我认为，它最大的节省写码时间的地方在于可以很方便的写出迭代器。
+
+例如，我们对 `vector<vector<pair<int, pair<int, int>>>>` 写一个迭代器。
+
+在 C++11 之前需要这么写：
+
+```cpp
+vector<vector<pair<int, pair<int, int> > > > v;
+vector<vector<pair<int, pair<int, int> > > >::iterator iter = ...;
+```
+
+但是使用 auto，我们可以很方便地解决这个问题。
+
+```cpp
+vector<vector<pair<int, pair<int, int>>>> v;
+auto iter = v.begin();
+```
+
+它会通过 `v.begin()` 自动推导出迭代器的类型。
+
+在 C++14 中，函数返回类型也可用 `auto` 了。
+
+使用例：
+
+```cpp
+auto IAKIOI()
+{
+	return 114514 + 1919810;
+}
+```
+
+![](https://z3.ax1x.com/2021/09/12/4SIj0I.png)
+
+### 新的 for 结构
+
+C++11 中新增加了一种 `for` 的结构，如下所示：
+
+```cpp
+for (name x : container)
+{
+	...    
+}
+```
+
+他会遍历 `container` 这一个容器，遍历的值放到类型为 `name` 的变量 `x` 上。
+
+这同样是一个能够减小码量节省时间的办法。
+
+同样，它也可以使用 `auto`。
+
+使用例:
+```cpp
+vector<int> v;
+
+...
+
+for (auto x : v)
+{
+	...
+}
+```
+
+请注意，如果需要通过这种方式进行对容器内元素的修改，需要定义引用形式的变量。
+
+```cpp
+vector<int> v;
+
+...
+
+for (auto &x : v)
+	x += 114514;
+```
+
+### 对模板中连续两个右尖括号 (>>) 的优化
+
+C++11 中新增。
+
+Dijkstra 堆优化中常见有一种结构。
+
+在 C++11 以前我们需要这么写。
+
+```cpp
+priority_queue<pair<int, int> > q;
+```
+
+`pair` 的右括号和 `priority_queue` 的之间必须隔开一个空格。
+
+现在我们可以不用这个空格了。
+
+```cpp
+priority_queue<pair<int, int>> q;
+```
+
+### function & bind
+
+C++11 中新增。
+
+`function` 是可调用对象的封装器，可以把 `function` 看做一个函数对象，用于表示函数这个抽象概念。
+
+`function` 的实例可以存储、复制和调用任何可调用对象，存储的可调用对象称为`function` 的目标。
+
+可调用对象可以是：
+
+- 一个函数指针
+
+- 一个具有 `operator()` 成员函数的类对象(传说中的仿函数)，`lambda`表达式
+
+- 一个可被转换为函数指针的类对象
+
+- 一个类成员(函数)指针
+
+- bind 表达式或其它函数对象
+
+使用例 (来自 [https://zh.cppreference.com/w/cpp/utility/functional/function](https://zh.cppreference.com/w/cpp/utility/functional/function))：
+
+```cpp
+#include <functional>
+#include <iostream>
+ 
+struct Foo {
+    Foo(int num) : num_(num) {}
+    void print_add(int i) const { std::cout << num_+i << '\n'; }
+    int num_;
+};
+ 
+void print_num(int i)
+{
+    std::cout << i << '\n';
+}
+ 
+struct PrintNum {
+    void operator()(int i) const
+    {
+        std::cout << i << '\n';
+    }
+};
+ 
+int main()
+{
+    // 存储自由函数
+    std::function<void(int)> f_display = print_num;
+    f_display(-9);
+ 
+    // 存储 lambda
+    std::function<void()> f_display_42 = []() { print_num(42); };
+    f_display_42();
+ 
+    // 存储到 std::bind 调用的结果
+    std::function<void()> f_display_31337 = std::bind(print_num, 31337);
+    f_display_31337();
+ 
+    // 存储到成员函数的调用
+    std::function<void(const Foo&, int)> f_add_display = &Foo::print_add;
+    const Foo foo(314159);
+    f_add_display(foo, 1);
+    f_add_display(314159, 1);
+ 
+    // 存储到数据成员访问器的调用
+    std::function<int(Foo const&)> f_num = &Foo::num_;
+    std::cout << "num_: " << f_num(foo) << '\n';
+ 
+    // 存储到成员函数及对象的调用
+    using std::placeholders::_1;
+    std::function<void(int)> f_add_display2 = std::bind( &Foo::print_add, foo, _1 );
+    f_add_display2(2);
+ 
+    // 存储到成员函数和对象指针的调用
+    std::function<void(int)> f_add_display3 = std::bind( &Foo::print_add, &foo, _1 );
+    f_add_display3(3);
+ 
+    // 存储到函数对象的调用
+    std::function<void(int)> f_display_obj = PrintNum();
+    f_display_obj(18);
+ 
+    auto factorial = [](int n) {
+        // 存储 lambda 对象以模拟“递归 lambda ”，注意额外开销
+        std::function<int(int)> fac = [&](int n){ return (n < 2) ? 1 : n*fac(n-1); };
+        // note that "auto fac = [&](int n){...};" does not work in recursive calls
+        return fac(n);
+    };
+    for (int i{5}; i != 8; ++i) { std::cout << i << "! = " << factorial(i) << ";  "; }
+}
+```
+
+`bind` 可以让可调用对象和参数绑定，其结果使用 `function` 保存。
+
+其可以：
+
+- 将可调用对象与参数一起绑定为另一个 `function` 供调用
+
+- 将 $n$ 元可调用对象转成 $m(m < n)$ 元可调用对象，绑定一部分参数，这里需要使用 `placeholders`
+
+使用例：
+
+```cpp
+#include <random>
+#include <iostream>
+#include <memory>
+#include <functional>
+ 
+void f(int n1, int n2, int n3, const int& n4, int n5)
+{
+    std::cout << n1 << ' ' << n2 << ' ' << n3 << ' ' << n4 << ' ' << n5 << '\n';
+}
+ 
+int g(int n1)
+{
+    return n1;
+}
+ 
+struct Foo {
+    void print_sum(int n1, int n2)
+    {
+        std::cout << n1+n2 << '\n';
+    }
+    int data = 10;
+};
+ 
+int main()
+{
+    using namespace std::placeholders;  // 对于 _1, _2, _3...
+ 
+    // 演示参数重排序和按引用传递
+    int n = 7;
+    // （ _1 与 _2 来自 std::placeholders ，并表示将来会传递给 f1 的参数）
+    auto f1 = std::bind(f, _2, 42, _1, std::cref(n), n);
+    n = 10;
+    f1(1, 2, 1001); // 1 为 _1 所绑定， 2 为 _2 所绑定，不使用 1001
+                    // 进行到 f(2, 42, 1, n, 7) 的调用
+ 
+    // 嵌套 bind 子表达式共享占位符
+    auto f2 = std::bind(f, _3, std::bind(g, _3), _3, 4, 5);
+    f2(10, 11, 12); // 进行到 f(12, g(12), 12, 4, 5); 的调用
+ 
+    // 常见使用情况：以分布绑定 RNG
+    std::default_random_engine e;
+    std::uniform_int_distribution<> d(0, 10);
+    std::function<int()> rnd = std::bind(d, e); // e 的一个副本存储于 rnd
+    for(int n=0; n<10; ++n)
+        std::cout << rnd() << ' ';
+    std::cout << '\n';
+ 
+    // 绑定指向成员函数指针
+    Foo foo;
+    auto f3 = std::bind(&Foo::print_sum, &foo, 95, _1);
+    f3(5);
+ 
+    // 绑定指向数据成员指针
+    auto f4 = std::bind(&Foo::data, _1);
+    std::cout << f4(foo) << '\n';
+ 
+    // 智能指针亦能用于调用被引用对象的成员
+    std::cout << f4(std::make_shared<Foo>(foo)) << '\n'
+              << f4(std::make_unique<Foo>(foo)) << '\n';
+}
+```
+
+### lambda 匿名函数
+
+C++11 中新增。
+
+由于内容繁多，在此不予过多介绍。
+
+请参见：[https://docs.microsoft.com/zh-cn/cpp/cpp/lambda-expressions-in-cpp?view=msvc-160](https://docs.microsoft.com/zh-cn/cpp/cpp/lambda-expressions-in-cpp?view=msvc-160)
+
+在 C++14 中，允许使用 `auto`。
+
+### 随机数
+
+C++11 更新了 `<random>` 库， 对随机数生成进行了优化，这里进行部分介绍。
+
+- 均匀分布的 `unsigned` 值
+
+	使用例：
+    
+    ```cpp
+	int min, max;
+	// 定义上下边界
+	
+	default_random_engine e;
+	// 创建引擎
+	
+	uniform_int_distribution<unsigned> u(min, max);
+	// 创建取值范围
+
+	int randNum = u(e);
+	// 获取伪随机数
+    ```
+- 生成随机实数
+
+	使用例：
+
+  	```cpp
+  	default_random_engine e;
+  	// 生成无符号随机整数
+  	// 0 到 1（包含）的均匀分布
+  	uniform_real_distribution<double >u(0, 1);
+  	for (int i = 0;i < 10; i++)
+		double u = u(e);
+  	```
+
+- `mt19937`
+	使用例：
+
+	```cpp
+    std::mt19937 mt_rand(std::random_device{}());
+	std::mt19937 mt_rand(time(0));
+	std::mt19937 mt_rand(std::chrono::system_clock::now().time_since_epoch().count());
+    ```
+
+请参见 [https://zh.cppreference.com/w/cpp/header/random](https://zh.cppreference.com/w/cpp/header/random)
+
+### `<chrono>`
+
+C++11 新增。
+
+由于内容繁多，在此不予过多介绍。
+
+请参见：[https://zh.cppreference.com/w/cpp/header/chrono](https://zh.cppreference.com/w/cpp/header/chrono)
+
+### `<array>`
+
+C++11 新增，这是一种新的数组定义方式。
+
+它提供给了数组更多高级功能，包括但不限于迭代器访问、获取容量、获得原始指针等。
+
+我们可以通过以下等等方式来定义一个 `array` ：
+
+```cpp
+std::array<int, 5> a0 = {0, 1, 2, 3, 4};
+std::array<int, 5> a1 = a0;
+std::array<int, 5> a2;
+```
+它支持 `[]`, `at`, `front`, `back`, `data` 访问元素，也支持迭代器进行访问。
+
+```
+at: 访问指定元素并进行越界检查
+[]: 访问指定元素
+front[]: 访问第一个元素
+back[]: 访问最后一个元素
+data: 返回指向内存中数组第一个元素的指针
+
+begin: 返回第一个元素的迭代器
+end: 尾端迭代器
+rbegin, rend: 逆向迭代器
+```
+
+也支持其他函数：
+
+```
+empty: 检查容器是否为空
+size: 返回容纳的元素数
+max_size: 返回可容纳的最大元素数
+fill: 以指定值填充容器
+swap: 交换内容
+```
+
+使用例 (来自 [https://blog.csdn.net/qq_38410730/article/details/102802239](https://blog.csdn.net/qq_38410730/article/details/102802239))：
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <array>
+
+int main()
+{
+  std::array<int, 5> a1 = {4, 0, 2, 1, 3};
+  std::array<int, 5> a2;
+
+  std::sort(a1.begin(), a1.end());                  //排序函数
+  for(int a: a1)
+    std::cout << a << ' ';
+  std::cout << std::endl;
+
+  std::reverse(a1.begin(), a1.end());                           //反转a1
+  for (std::array<int, 5>::iterator iter = a1.begin(); iter != a1.end(); ++iter)
+    std::cout << *iter << " ";
+  std::cout << std::endl;
+
+  std::reverse_copy(a1.begin(), a1.end(), a2.begin());          //反转a1的内容拷贝到a2
+  for (int i = 0; i < a2.size(); ++i)
+    std::cout << a2[i] << " ";
+  std::cout << std::endl;
+}
+
+```
+
+```cpp
+# include <iostream>
+# include <array>
+
+int main(int argc, char const *argv[])
+{
+  std::array<int, 5> a = {0, 1, 2, 3, 4};
+  std::cout << a.front() << " " << a.at(1) << " " << a[2] << " " << *(a.data() + 3) << " " << a.back() << std::endl;
+
+  std::array<int, 5>::iterator iter;
+  for (iter = a.begin(); iter != a.end(); ++iter)
+    std::cout << *iter << " ";
+  std::cout << std::endl;
+
+  std::array<int, 5>::reverse_iterator riter;
+  for (riter = a.rbegin(); riter != a.rend(); ++riter)
+    std::cout << *riter << " ";
+  std::cout << std::endl;
+
+  return 0;
+}
+```
+
+### 二进制字面量
+
+顾名思义，使用例：
+
+```cpp
+int a = 0b0001'0011'1010;
+```
+
+### 支持函数 template 的默认参数
+
+C++11 新增，在 OI 中用于快读中区分 `int` 和 `long long`。
+
+使用例 (来自 [https://zh.cppreference.com/w/cpp/utility/functional/bind](https://zh.cppreference.com/w/cpp/utility/functional/bind))：
+
+```cpp
+template <typename T = int>
+inline T read()
+{
+	...
+}
+```
+
+如果我们需要对 `int` 快读，那就直接
+
+```cpp
+int t = read();
+```
+
+对于 `long long`，则可以区别对待；
+
+```cpp
+long long t = read<long long>();
+```
+
+### 支持在函数 template 中使用可变参数
+
+C++11 新增，在 OI 中用于读入或输出多个变量。
+
+使用例：
+
+```cpp
+int read()
+{
+	int fx = 1, xx = 0;
+	char ch = getchar();
+	while (!isdigit(ch))
+	{
+		if (ch == '-')
+			fx = -1;
+		ch = getchar();
+	}
+	while (isdigit(ch))
+		xx *= 10, xx += ch - 48, ch = getchar();
+	return fx * xx;
+}
+
+void Read()
+{
+	return;
+}
+
+template <typename FirstArgv, typename... Args>
+void Read(FirstArgv& argv, Args&... args)
+{
+	argv = read();
+	Read(args...);
+}
+```
+
+![](https://z3.ax1x.com/2021/09/12/4SfYrt.png)
+
+### 新增的一些数据结构和算法
+
+#### 数据结构：
+
+- `tuple` 使用例：[https://paste.ubuntu.com/p/RxsG9JTVQX/](https://paste.ubuntu.com/p/RxsG9JTVQX/)
+- `forward_list`
+- `unordered_set`
+- `unordered_map`
+- `array`
+
+#### 算法：
+
+- `all_of, any_of, none_of`: 检测表达式对范围内的元素是否 全部为真/至少有一个为真/都不是真。
+
+  使用例：
+  ```cpp
+  std::vector<int> v;
+
+  ...
+
+  if (all_of(v.cbegin(), v.cend(), [](int i) { return !(i & 1); })) 
+      cout << "所有数字都是偶数";
+
+  if (any_of(v.cbegin(), v.cend(), [](int i) { return !(i & 1); }))
+      cout << "至少有一个数字是偶数";
+
+  if (none_of(v.cbegin(), v.cend(), [](int i) { return !(i & 1); }))
+      cout << "没有数字是偶数";
+  ```
+
+- `minmax_element`: 找到容器中最大元素最小元素的位置。
+
+  使用例：
+  ```cpp
+  int main()
+  {
+      std::vector<int> v = {4, 5, 1, 9, 8, 0};
+
+      auto result = std::minmax_element(v.begin(), v.end());
+      std::cout << "最小元素是: " << *(result.first) << endl;
+      std::cout << "最大元素是: " << *(result.second) << endl;
+      return 0;
+  }
+  ```
+
+  ![](https://z3.ax1x.com/2021/09/12/4S5Ld0.png)
+
+### 使用 using 代替 typedef
+
+基本在开 `long long` 的时候使用。
+
+使用例：
+
+```cpp
+typedef long long ll;
+
+using ll = long long;
+```
+
+二者等效。
+
+### decltype
+
+> decltype 是 "declare type" 的缩写。
+
+C++11 新增，它的作用是可以通过**表达式**来推断变量的类型。
+
+使用例：
+
+```cpp
+decltype(1919 * 810) a = 1;
+decltype(114.514) b = 14.7;
+
+int x = 0;
+decltype(x) c = 2;
+```
+
+![](https://z3.ax1x.com/2021/09/12/4SR2yq.png)
+
+### 返回类型后置
+
+这是 C++11 中新增的一种语法，可以使用 `decltype` 和 `auto` 结合在一起完成对返回值的推导，但是在 OI 中使用不多。
+
+使用例：
+
+```cpp
+template <typename T, typename U>
+auto func(T t, U u) -> decltype(t + u)
+{
+	return t + u;
+}
+```
+
+参考文档：
+
+[https://zh.cppreference.com/w/cpp](https://zh.cppreference.com/w/cpp)
+
+[https://blog.csdn.net/qq_38410730/article/details/102802239](https://blog.csdn.net/qq_38410730/article/details/102802239)
+
+[https://www.jianshu.com/p/6d9a7de995bb](https://www.jianshu.com/p/6d9a7de995bb)
+
+[https://www.cnblogs.com/jwk000/p/3560086.html](https://www.cnblogs.com/jwk000/p/3560086.html)
+
+[https://blog.csdn.net/tsbyj/article/details/46994851](https://blog.csdn.net/tsbyj/article/details/46994851)
+
+[https://zhuanlan.zhihu.com/p/137884434](https://zhuanlan.zhihu.com/p/137884434)
+
+[https://zhuanlan.zhihu.com/p/139515439](https://zhuanlan.zhihu.com/p/139515439)
+
+[http://c.biancheng.net/view/8600.html](http://c.biancheng.net/view/8600.html)
+
+[https://blog.csdn.net/aced96/article/details/118018623](https://blog.csdn.net/aced96/article/details/118018623)
+
+[http://c.biancheng.net/view/3730.html](http://c.biancheng.net/view/3730.html)
+
+[http://c.biancheng.net/view/3734.html](http://c.biancheng.net/view/3734.html)
+
+[http://c.biancheng.net/view/3727.html](http://c.biancheng.net/view/3727.html)
+
+[http://c.biancheng.net/view/7151.html](http://c.biancheng.net/view/7151.html)
+
+[https://docs.microsoft.com/zh-cn/cpp/cpp/ellipses-and-variadic-templates?view=msvc-160](https://docs.microsoft.com/zh-cn/cpp/cpp/ellipses-and-variadic-templates?view=msvc-160)
+
+</xmp>
+
+
+<script src="strapdown/v/0.2/strapdown.js"></script>
+
+<div>
+    <!-- Button Here -->
+    <!-- Fixed Button 2021-04-18-->
+    <a class="button" href="../archives.html" style="width: 40%; border-radius: 8px; margin-left: 30%; margin-top: 100px;  margin-bottom: 40px">
+        <p style="font-size: 2vmax;">
+            <<< Return to archive list </p>
+    </a>
+</div>
+
+</html>
