@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Maxmilite - All Over</title>
+    <link rel="icon" href="../icon.png" type="image/x-icon">
+</head>
+
+<link rel="stylesheet" href="../css/style-archive.css">
+
+<canvas id="snow-flake-app"></canvas>
+<script src="../js/snow-flake-app.js"></script>
+
+<!-- <ul class="nav">
+    <li style="width: 40%;">
+        <div>
+            <p style="font-size: xx-large;"><img src="../icon.png" height="40px" width="40px"
+                    style="border-radius: 4px;">&nbsp;Maxmilite</p>
+        </div>
+    </li>
+</ul> -->
+
+<div class="main">
+    <h1 style="text-align: center;">
+        Vm0wd2VFMUdiRmRpUm1oVlltczFjRlJVU205V01WbDNXa1pPYVUxWVFsbFpNRlpMVlVaV1ZVMUVhejA9
+    </h1>
+</div>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<xmp theme="united" style="display:none;" id="section">
+
+### Vm0wd2VFMUdiRmRpUm1oVlltczFjRlJVU205V01WbDNXa1pPYVUxWVFsbFpNRlpMVlVaV1ZVMUVhejA9
+
+> 整体按照 NOI 大纲编写，个别篇目按照对我来说的重要程度进行排序。Vm0wd2QyUXlVWGxXYTFwT1ZsZFNjRlZ0TVZOalJsWjBUVlpPV0ZKc2JETlhhMk0xVmpGYWRHVkVRbUZTVjJoeVZteFZlRll5VGtsalJtUk9ZV3hhZVZadE1UUlRNazE1Vkd0V1VtSlZXbGhXYWtaTFUxWmFkR05GWkZSTmF6RTFWa2QwYzJGV1NuUlZia0pYVFVad1NGUlVSbUZrUjFKSFYyMTRVMkpIZHpCV01uUnZWakpHVjFOdVVsWmlhMHBZVkZWa1UyUnNiSEZTYlVacVlraENSbFpYZUhkV01ERkZVbFJDVjJFeVRYaFdSRXBIVWpGT2RWVnNXbWxTTW1odlZtMXdUMkl5UmtkWGEyUllZbFZhY1ZscldtRmxWbVJ5VjJ4T1ZXSkdjREZWVjNoelZqRmFSbUV6YUZkU1JWcHlWVEJhVDJOc2NFaGpSazVwVmpKb2IxWXhXbE5TTVd4WFlrWmthbEp0YUhOVmFrSmhWMFpzY2xwR1RteFdiR3cxV2xWV1QxWXdNWEpXYWs1YVRVWndWRlpxUm1GV01rNUhWRzFHVTFKV2NFVldiR1EwVVRGYVZrMVZWazVTUkVFNQ==
+
+## 高精度
+
+1. 用 `int`, 用 `int`, 用 `int`
+
+    不差这一点空间，用 `char` 遇到复杂运算得不偿失。
+
+2. 加法
+
+    按位从前往后加，开个临时变量来存冗余值。
+
+3. 减法
+
+    大减小，必要的时候做 `swap`，借位的时候不需要考虑前一位为 $0$ 的情况，后面直接补充，最后进行位数判断，删前导 $0$ 位。
+
+4. 乘法
+
+    $n ^ 2$ 写法，按位乘，优先考虑让结果的位数最高。
+
+    `y.a[i + j - 1] += a[i] * x.a[j];` 
+
+    先全部乘完，完活以后再考虑进位问题，最后删前导 $0$ 。
+
+5. 除法
+
+    ​	直接背罢，没救了.jpg
+
+    ```c++
+    bigint operator/ (bigint x)
+    {
+        bigint y, z = *this;
+        if (x == y) // 判断是否为 0
+            return x;
+        y.n = z.n - x.n + 1; // 开位数，考虑到除法会产生的结果
+        for (int i = y.n; i >= 1; i--)
+        {
+            bigint t = x << (i - 1); // XX左移右移在后面XX
+            // 这是个寄吧左移右移，这是位数平移
+            while (z >= t) // 按位搞，对每位挨个除
+            {
+                y.a[i]++;
+                z -= t;
+            }
+        }
+        while (y.a[y.n] == 0 && y.n > 1) // 删q位
+            y.n--;
+        return y;
+    }
+    ```
+
+6. 取模
+
+    先敲除法，然后用整除乘回去搞出来余数。
+
+7. 左移右移
+
+    不是传统意义上的左移右移，大概可以理解 $\times 10 ^ n \texttt{or} \div 10 ^ n$。
+
+8. 真正意义上的左移右移
+
+    没救了，直接乘除 $2 ^ n$ 罢.jpg
+
+9. 快速幂
+
+    直接照着普通快速幂打得了，把 `>> 1` 用 `/ 2` 处理。
+
+10. 正负数特判
+
+    直接写罢，写不出来就不要高精的分了.jpg
+
+    毒瘤。
+
+## 输入输出
+
+> 尽管很多时候直接用 `scanf`，`printf` 就可以解决绝大多数问题，但是面对 `string` 等等类的时候还是容易出事。
+
+1. `cerr`
+
+    别作死。
+
+2. 空格和 `\n`
+
+    `cin`, `cout` 不支持输入空格，直接使用如下字段录入一行字符串。
+
+    ```cpp
+    string getString()
+    {
+        string cur;
+        char ch = getchar();
+        while (ch != '\n')
+            cur += ch, ch = getchar();
+        return cur;
+    }
+    ```
+
+3. 控制符
+
+    > 背罢.jpg
+
+    *注：带 `*` 的是 `cout` 默认采用的格式*
+
+    |      流操纵算子       |                          作用                           |
+    | :-------------------: | :-----------------------------------------------------: |
+    |        `*dec`         |                       十进制输出                        |
+    |         `hex`         |                        十六进制                         |
+    |         `oct`         |                         八进制                          |
+    |        `fixed`        |                 普通小数形式输出浮点数                  |
+    |     `scientific`      |                科学计数法形式输出浮点数                 |
+    |        `left`         |                         左对齐                          |
+    |       `*right`        |                         右对齐                          |
+    |     `setbase(x)`      |          设置输出的进制，$x \in \{8, 10, 16\}$          |
+    |       `setw(x)`       |         设置输出宽度为 $x$，同样也可以用于输入          |
+    |     `setfill(x)`      | 在指定输出宽度的情况下，输出的宽度不足的时候用 `x` 填充 |
+    |   `setprecision(x)`   |               设置输出的浮点数精度为 $x$                |
+    |  `setiosflags(flag)`  |              将某个输出格式标志设置为 $1$               |
+    | `resetiosflags(flag)` |                将某个输出格式设置为 $0$                 |
+
+    ![](https://z3.ax1x.com/2021/10/05/4vQbss.png)
+
+    使用例：
+
+    ```cpp
+    #include <iostream>
+    #include <iomanip>
+    using namespace std;
+    int main()
+    {
+        int n = 141;
+        //1) 分别以十六进制、十进制、八进制先后输出 n
+        cout << "1)" << hex << n << " " << dec << n << " " << oct << n << endl;
+        double x = 1234567.89, y = 12.34567;
+        //2)保留5位有效数字
+        cout << "2)" << setprecision(5) << x << " " << y << " " << endl;
+        //3)保留小数点后面5位
+        cout << "3)" << fixed << setprecision(5) << x << " " << y << endl;
+        //4)科学计数法输出，且保留小数点后面5位
+        cout << "4)" << scientific << setprecision(5) << x << " " << y << endl;
+        //5)非负数显示正号，输出宽度为12字符，宽度不足则用 * 填补
+        cout << "5)" << showpos << fixed << setw(12) << setfill('*') << 12.1 << endl;
+        //6)非负数不显示正号，输出宽度为12字符，宽度不足则右边用填充字符填充
+        cout << "6)" << noshowpos << setw(12) << left << 12.1 << endl;
+        //7)输出宽度为 12 字符，宽度不足则左边用填充字符填充
+        cout << "7)" << setw(12) << right << 12.1 << endl;
+        //8)宽度不足时，负号和数值分列左右，中间用填充字符填充
+        cout << "8)" << setw(12) << internal << -12.1 << endl;
+        cout << "9)" << 12.1 << endl;
+        return 0;
+    }
+    ```
+
+4. 字符串
+
+    |      指令       |                      作用                       |
+    | :-------------: | :---------------------------------------------: |
+    |   `cin.get()`   | `char ch = cin.get()` / `char ch; cin.get(ch);` |
+    | `cin.getline()` |    `char ch[114514]; cin.getline(ch, 114);`     |
+    |   `getline()`   |        `string str; getline(cin, str);`         |
+
+## C++ string 类
+
+> 救命法宝。
+
+​	[http://c.biancheng.net/cpp/biancheng/view/3284.html](http://c.biancheng.net/cpp/biancheng/view/3284.html)
+
+## 不开 $\texttt{long long}$ 见祖宗
+
+​	同字面义，建议除了特别卡常的题以外 `#define int long long`。
+
+​	实在不行可以考虑开 $\texttt{long long}$ 之后造极限数据和源程序对拍。
+
+> 反转了，`#define int __int128`。
+>
+> 又反转了，简单题直接用 Python 写一份然后对拍。
+
+## STL
+
+> 背就完了.jpg
+>
+> 基本上模板都是通用的，实在不行考场上打库然后手查。
+
+NOI 考纲中提到的提高组 STL 如下，对例如 `stack` 之类的普及组内容不予记录：
+
+$\texttt{set, list, deque, priority_queue, multiset, map, multimap, pair, tuple}$
+
+## 数据结构
+
+> 啥都不会.jpg
+
+ 1. ST 表
+
+    $O(n \log n)$ 预处理，$O(1)$ 回答询问。
+
+    一般用于询问极多的处理。
+
+    **无修改**。
+
+    **可重复贡献**。
+
+    状态：$f(i, j) = [i, i + 2 ^ j - 1]$ , $f(i, 0) = a _ i$, $f(i, j) = \operatorname{opt} (f(i, j - 1), f(i + 2 ^ {j - 1}, j - 1))$
+
+    $\operatorname{query}[l, r] \to f[l, l + 2 ^ s - 1], f[r - 2 ^ s + 1, r] $
+
+    $s = \left \lfloor \log _ 2 (r - l + 1) \right \rfloor $
+
+2. 线段树
+
+    ~~复习个锤子复习，会了也不会写。~~
+
+    核心操作：`updateSegment`，`pushDown`，`addMark`，`pushUp`，`querySegment`
+
+    ```cpp
+    void updateSegment(int arrayL, int arrayR, int l, int r, int x, int k) 
+    {
+        // arrayL, arrayR -> 真实的区间
+        // l, r -> 线段树区间
+        // x -> 线段树对应数组指针
+        // k -> 操作底数
+        if (arrayL <= l && arrayR >= r) // 线段树区间被包括在真实区间内
+        {
+            SegmentTree[x] /* operator */ k;
+            Tag[x] += k;
+    	}
+        else
+        {
+            pushDown(x, l, r); // 先把当前区间的标记下传
+            int mid = (l + r) >> 1;
+            if (arrayL <= mid) // 修改左区间，判断是否需要修改
+                updateSegment(arrayL, arrayR, l, mid, x << 1, k);
+            if (arrayR > mid) // 同上，注意等号
+                updateSegment(arrayL, arrayR, mid + 1, r, (x << 1) + 1, k);
+            pushUp(x); // 上传
+    	}
+    }
+    ```
+
+    ```cpp
+    void addMark(int x, int l, int r, int k)
+    {
+        // x -> 线段树指针
+        // l, r -> 线段树对应区间
+        // k -> 操作底数
+        Tag[x] +=  k;
+        SegmentTree[x] /* operator */ k;
+    }
+    
+    void pushDown(int x, int l, int r)
+    {
+        // x -> 线段树指针
+        // l, r -> 线段树对应区间
+        int mid = (l + r) >> 1;
+        addMark(x << 1, l, mid, Tag[x]);
+        addMark((x << 1) + 1, mid + 1, r, Tag[x]);
+        Tag[x] = 0;
+    }
+    
+    void pushUp(int x)
+    {
+        // x -> 线段树指针
+        // x 是被上传的那个
+        SegmentTree[x] = SegmentTree[x << 1] /* operator */ SegmentTree[(x << 1) + 1];
+    }
+    ```
+
+    ```cpp
+    int querySegment(int arrayL, int arrayR, int l, int r, int x)
+    {
+        // arrayL, arrayR -> 真实的区间
+        // l, r -> 线段树区间
+        // x -> 线段树对应数组指针
+        int res = 0;
+        if (arrayL <= l && arrayR >= r) // 线段树区间被包括在真实区间内
+            return SegmentTree[x];
+        int mid = (l + r) >> 1;
+        pushDown(x, l, r); // 把当前区域标记下传
+        if (arrayL <= mid)
+            res += querySegment(arrayL, arrayR, l, mid, x << 1); // 分讨
+        if (arrayR > mid)
+            res += querySegment(arrayL, arrayR, mid + 1, r, (x << 1) + 1); // 分讨
+        return res;
+    }
+    ```
+
+    可以使用
+
+    ```cpp
+    #define ls(x) (x << 1)
+    #define rs(x) ((x << 1) + 1)
+    ```
+
+    减小码量。
+
+    
+
+    1. 区间加和 & 查询
+
+        `/* operator */` 改为 `+` 并进行一定调整即可。
+
+    2. 区间乘法
+
+        1. Lazy Tag
+
+            初始化为 $1$，下传的时候使用如下写法：
+
+            ```cpp
+            SegmentTree[x << 1] *= k;
+            Tag[x << 1] *= k;
+            Tag[x] = 1;
+            ```
+
+        2. 更新
+
+            如下所示：
+
+            ```cpp
+            void updateSegment(int arrayL, int arrayR, int x, int l, int r, int k)
+            {
+                // arrayL, arrayR -> 真实的区间
+                // l, r -> 线段树区间
+                // x -> 线段树对应数组指针
+                // k -> 操作底数
+                if (arrayL <= l && arrayR >= r) // 线段树区间被包括在真实区间内
+                {
+                    SegmentTree[x] *= k;
+                    Tag[x] *= k;
+                    PlusTag[x] *= k; // 注意对加法的 Tag 进行乘
+            	}
+                else
+                {
+                    pushDown(x, l, r); // 先把当前区间的标记下传
+                    int mid = (l + r) >> 1;
+                    if (arrayL <= mid) // 修改左区间，判断是否需要修改
+                        updateSegment(arrayL, arrayR, l, mid, x << 1, k);
+                    if (arrayR > mid) // 同上，注意等号
+                        updateSegment(arrayL, arrayR, mid + 1, r, (x << 1) + 1, k);
+                    pushUp(x); // 上传
+            	}
+            }
+            ```
+
+        其余的基本上不用改，还是比较简单的 ![](https://啧.tk/kk)
+
+        **注意：Lazy Tag 下传建议使用先乘后加。**
+
+        由于太过艰难，放一个代码在这里。
+
+        **一定要注意任何传参和取模爆  `int` 的可能。**
+
+        ```cpp
+        #include <bits/stdc++.h>
+        using namespace std;
+        
+        #define lint long long
+        #define rep(_, __, ___) for (int _ = __; _ <= ___; ++_)
+        #define ls(x) (x << 1)
+        #define rs(x) ((x << 1) + 1)
+        const int maxn = 1e5 + 5;
+        
+        lint SegmentTree[maxn << 2], a[maxn], PlusTag[maxn << 2], MultiTag[maxn << 2];
+        int n, m;
+        lint p;
+        
+        inline void pushUp(int x)
+        {
+        	SegmentTree[x] = (SegmentTree[ls(x)] + SegmentTree[rs(x)]) % p;
+        }
+        
+        void buildTree(int l, int r, int x)
+        {
+            MultiTag[x] = 1;
+            PlusTag[x] = 0;
+        	if (l == r)
+        		SegmentTree[x] = a[l];
+        	else
+        	{
+        		int mid = (l + r) >> 1;
+        		buildTree(l, mid, ls(x));
+        		buildTree(mid + 1, r, rs(x));
+        		pushUp(x);
+        	}
+            SegmentTree[x] %= p;
+        }
+        
+        void addMark(int l, int r, int x, lint k1, lint k2)
+        {
+            SegmentTree[x] *= k1;
+            SegmentTree[x] %= p;
+        	SegmentTree[x] += (r - l + 1) * k2;
+            SegmentTree[x] %= p;
+            MultiTag[x] *= k1;
+            MultiTag[x] %= p;
+            PlusTag[x] *= k1;
+            PlusTag[x] %= p;
+        	PlusTag[x] += k2;
+            PlusTag[x] %= p;
+        }
+        
+        void pushDown(int l, int r, int x)
+        {
+        	int mid = (l + r) >> 1;
+        	addMark(l, mid, ls(x), MultiTag[x], PlusTag[x]);
+        	addMark(mid + 1, r, rs(x), MultiTag[x], PlusTag[x]);
+        	PlusTag[x] = 0;
+            MultiTag[x] = 1;
+        }
+        
+        void updateSegmentPlus(int l, int r, int x, int arrayL, int arrayR, lint k)
+        {
+        	if (arrayL <= l && r <= arrayR)
+        	{
+        		SegmentTree[x] += (r - l + 1) * k;
+        		PlusTag[x] += k;
+                SegmentTree[x] %= p;
+                PlusTag[x] %= p;
+        	}
+        	else
+        	{
+        		pushDown(l, r, x);
+        		int mid = (l + r) >> 1;
+        		if (arrayL <= mid)
+        			updateSegmentPlus(l, mid, ls(x), arrayL, arrayR, k);
+        		if (arrayR > mid)
+        			updateSegmentPlus(mid + 1, r, rs(x), arrayL, arrayR, k);
+        		pushUp(x);
+        	}
+        }
+        
+        void updateSegmentMulti(int l, int r, int x, int arrayL, int arrayR, lint k)
+        {
+        	if (arrayL <= l && r <= arrayR)
+        	{
+        		SegmentTree[x] *= k;
+        		MultiTag[x] *= k;
+                PlusTag[x] *= k;
+                SegmentTree[x] %= p;
+                MultiTag[x] %= p;
+                PlusTag[x] %= p;
+        	}
+        	else
+        	{
+        		pushDown(l, r, x);
+        		int mid = (l + r) >> 1;
+        		if (arrayL <= mid)
+        			updateSegmentMulti(l, mid, ls(x), arrayL, arrayR, k);
+        		if (arrayR > mid)
+        			updateSegmentMulti(mid + 1, r, rs(x), arrayL, arrayR, k);
+        		pushUp(x);
+        	}
+        }
+        
+        lint querySegment(int l, int r, int x, int arrayL, int arrayR)
+        {
+        	lint res = 0;
+        	if (arrayL <= l && arrayR >= r)
+        		return SegmentTree[x] % p;
+        	int mid = (l + r) >> 1;
+        	pushDown(l, r, x);
+        	if (arrayL <= mid)
+        		res += querySegment(l, mid, ls(x), arrayL, arrayR) % p;
+        	if (arrayR > mid)
+        		res += querySegment(mid + 1, r, rs(x), arrayL, arrayR) % p;
+        	return res % p;
+        }
+        
+        int main()
+        {
+        	scanf("%d%d%lld", &n, &m, &p);
+        	rep(i, 1, n)
+        		scanf("%lld", a + i);
+        	buildTree(1, n, 1);
+            while (m--)
+        	{
+        		int opt;
+        		scanf("%d", &opt);
+        		if (opt == 1)
+                {
+                    int x, y;
+                    lint k;
+                    scanf("%d%d%lld", &x, &y, &k);
+                    updateSegmentMulti(1, n, 1, x, y, k);
+                }
+                else if (opt == 2)
+        		{
+        			int x, y;
+                    lint k;
+        			scanf("%d%d%lld", &x, &y, &k);
+        			updateSegmentPlus(1, n, 1, x, y, k);
+        		}
+        		else
+        		{
+        			int x, y;
+        			scanf("%d%d", &x, &y);
+                    lint res = querySegment(1, n, 1, x, y);
+        			printf("%lld\n", res);
+        		}
+        	}
+        	return 0;
+        }
+        ```
+
+        
+
+ 3. 树状数组
+
+    常用。
+
+    比线段树好用（指易写）。
+
+    核心操作：`lowbit(x) = x & -x`
+
+    通过不断查询 `lowbit(x)` 来查询前缀和。
+
+    使用前缀和维护区间信息。
+
+    1. 单点修改
+
+        更新时不断维护上级信息。
+
+        ```cpp
+        void add(int x, int k)
+        {
+            while (x <= n)
+                TreeArray[x] += k, x += lowbit(x);
+        }
+        ```
+
+    2. 区间查询
+
+        前缀和维护。
+
+        $\sum _ {i = l} ^ {r}  = S _ r - S _ {l - 1}$
+
+        $S _ n = \sum _ {i = 1} ^ {n}$
+
+        ```cpp
+        void query(int x)
+        {
+            int ans = 0;
+            while (x)
+                ans += c[x], x -= lowbit(x);
+        }
+        ```
+
+    3. 区间修改 & 区间求和
+
+        使用**差分**维护。
+
+        ```cpp
+        // C++ Version
+        int t1[MAXN], t2[MAXN], n;
+        
+        inline int lowbit(int x) { return x & (-x); }
+        
+        void add(int k, int v) {
+          int v1 = k * v;
+          while (k <= n) {
+            t1[k] += v, t2[k] += v1;
+            k += lowbit(k);
+          }
+        }
+        
+        int getsum(int *t, int k) {
+          int ret = 0;
+          while (k) {
+            ret += t[k];
+            k -= lowbit(k);
+          }
+          return ret;
+        }
+        
+        void add1(int l, int r, int v) {
+          add(l, v), add(r + 1, -v);  // 将区间加差分为两个前缀加
+        }
+        
+        long long getsum1(int l, int r) {
+          return (r + 1ll) * getsum(t1, r) - 1ll * l * getsum(t1, l - 1) -
+                 (getsum(t2, r) - getsum(t2, l - 1));
+        }
+        ```
+
+ 4. **分      块**
+
+    **美  的  暴  力，老  少  皆  宜，男  女  通  吃，无  人  不  知，无  人  不  晓，根  号  科  技，天  下  第  一。**
+
+    **学数据结构不学分块，就像四大名著不看红楼梦，说明这个人文学造诣和自我修养不足，他理解不了这种内在的阳春白雪的高雅艺术，他只能看到外表的辞藻堆砌，参不透其中深奥的精神内核，他整个人的层次就卡在这里了，只能度过一个相对失败的人生。**
+
+    >  **我们都知道，只要有意义，那么就必须慎重考虑。 这种事实对本人来说意义重大，相信对这个世界也是有一定意义的。 经过上述讨论， 迈克尔·F·斯特利在不经意间这样说过，最具挑战性的挑战莫过于提升自我。这句话语虽然很短, 但令我浮想联翩. 西班牙在不经意间这样说过，自知之明是最难得的知识。这句话看似简单，但其中的阴郁不禁让人深思. 每个人都不得不面对这些问题。 在面对这种问题时， 既然如此， 这样看来， 就我个人来说，分块对我的意义，不能不说非常重大。 这样看来， 生活中，若分块出现了，我们就不得不考虑它出现了的事实。**
+    >
+    >  **希腊说过一句富有哲理的话，最困难的事情就是认识自己。带着这句话, 我们还要更加慎重的审视这个问题: 既然如何， 在这种困难的抉择下，本人思来想去，寝食难安。 要想清楚，分块，到底是一种怎么样的存在。 本人也是经过了深思熟虑，在每个日日夜夜思考这个问题。 博在不经意间这样说过，一次失败，只是证明我们成功的决心还够坚强。 这启发了我。分块的发生，到底需要如何做到，不分块的发生，又会如何产生。 分块，到底应该如何实现。 培根在不经意间这样说过，阅读使人充实，会谈使人敏捷，写作使人精确。我希望诸位也能好好地体会这句话。**
+    >
+    >  **我们不得不面对一个非常尴尬的事实，那就是， 马尔顿说过一句富有哲理的话，坚强的信心，能使平凡的人做出惊人的事业。这启发了我. 既然如此， 每个人都不得不面对这些问题。 在面对这种问题时， 我们不得不面对一个非常尴尬的事实，那就是， 经过上述讨论， 塞涅卡说过一句富有哲理的话，真正的人生，只有在经过艰难卓绝的斗争之后才能实现。这句话把我们带到了一个新的维度去思考这个问题: 本人也是经过了深思熟虑，在每个日日夜夜思考这个问题。**
+
+    可劲造就完了，一般块长在 $\sqrt{n}$ 级别。
+
+    低级的分块拥有卓越的性能和**非常简短**的码量。
+
+ 5. 双端队列、双端栈
+
+    开俩指针 `head, tail`，一般对于规模为 $n$ 的数据，开 $2n$ 的数组，以 $n + 1$ 为起点。
+
+    可以写 class 重载。
+
+ 6. 有序队列
+
+    ~~待补。~~
+
+    补个锤子。
+
+    单调队列。
+
+    插入一个新元素的时候弹出去没有贡献的元素。
+
+ 7. 优先队列
+
+    $\texttt{priority_queue<class T, class Container, class Compare>}$
+
+    手写是不可能手写的，直接用 STL 得了。 
+
+    成员函数：
+
+    - `operator=` 直接赋值，建议联合 $\texttt{vector}$ 使用。
+    - `top` 访问栈顶元素
+    - `empty, size` 顾名思义
+    - `push, pop, swap` 顾名思义
+    - `emplace` 传入构造元素
+
+ 8. 并查集
+
+    核心操作：
+
+    ```cpp
+    if (fa[x] == x)
+        return fa[x];
+    else
+        return fa[x] = find(fa[x]);
+    ```
+
+    建议查询的时候更新一次，例如 `query(a, b) -> query(find(a), find(b))`。
+
+    记得初始化。
+
+ 9. 字典树
+
+    又名 $\texttt{Trie}$ 树。
+
+    可以考虑动态开点，实现如下：
+
+    ```cpp
+    struct Node
+    {
+        Node* son[26];
+        bool isEnd;
+        Node() 
+        {
+            for (int i = 0; i < 26; ++i)
+                son[i] = NULL;
+            isEnd = false;
+    	}
+    };
+    
+    struct Trie
+    {
+    	Node* root;
+        void init() { root = new Node(); }
+        void insert(string str)
+        {
+            Node* p = root;
+            for (char ch : str)
+            {
+                int c = ch - 'a';
+                if (!p->son[c])
+                    p->son[c] = new Node();
+                p = p->son[c];
+            }
+            p->isEnd = true;
+    	}
+        bool query(string str, int pos, Node* p)
+        {
+            if (pos == str.size())
+                return p->isEnd;
+            char ch = str[pos];
+            int c = ch - 'a';
+            if (!p->son[c])
+                return false;
+            else
+                return query(str, pos + 1, p->son[c]);
+            // query(str, 0, *this.root);
+        }
+    };
+    ```
+
+    补充：$\texttt{01 Trie}$
+
+    >将整数用二进制表示后当成字符串，打到 $\texttt{Trie}$ 里面去。
+    >
+    >二进制的前导 $0$ 也要打。
+    >
+    >动态开点，一个节点的儿子最多只有两个。
+    >
+    >可以用于处理异或问题。
+
+ 10. **笛卡尔树**
+
+     1. 定义：
+
+         - 二叉树
+
+         - 每一个节点是一个二元组 $(k, w)$
+
+         - $k$ 满足 $\texttt{BST}$ 的性质，而 $w$ 满足堆的性质
+         - 如果 $k, w$ 均互不相同，树结构唯一
+
+       2. ![](https://oi-wiki.org/ds/images/cartesian-tree1.png)
+
+       3. 构建
+
+          维护右链，从下往上比较右链节点于当前节点 $u$ 的 $w$，当找到了右链上节点 $x$ 满足 $x _ w < u _ w$，将 $u$ 接到 $x$ 的右儿子上，$x$ 本来的右子树变成 $u$ 的左子树。
+
+          ![](https://oi-wiki.org/ds/images/cartesian-tree2.png)
+
+          维护一个栈，用来维护当前笛卡尔树右链上的节点。$O(n)$
+
+          ```cpp
+          新建一个大小为 n 的空栈。用 top 来标操作前的栈顶，k 来标记当前栈顶。
+          For i := 1 to n
+              k := top
+              While 栈非空 且 栈顶元素 > 当前元素 
+                  k--
+              if 栈非空
+                  栈顶元素.右儿子 := 当前元素
+              if k < top
+                  当前元素.左儿子 := 栈顶元素
+              当前元素入栈
+              top := k
+          ```
+
+
+​    
+
+ 11. BST
+
+     >  不会写，告辞！
+
+     $\texttt{Splay, Treap}$
+
+ 12. 基环树
+
+     一条树加了一个边。
+
+     考虑跑一个类 $\texttt{Tarjan}$ 把环求出来，然后断环处理即可。
+
+     参考 "[NOIP 2018] 旅行" 中的无向图类 $\texttt{Tarjan}$ 部分。
+
+     ```cpp
+     void predfs(int x, int fa)
+     {
+     	s.push(x);
+     	instack[x] = 1;
+     	for (auto i : g[x])
+     	{
+     		if (flag)
+     			return;
+     		if (instack[i] && i != fa)
+     		{
+     			while (s.top() != i)
+     				circuit.push_back(s.top()),
+     				s.pop();
+     			circuit.push_back(s.top());
+     			flag = 1;
+     		}
+     		else if (i != fa)
+     			predfs(i, x);
+     	}
+     	if (flag)
+     		return;
+     	if (!s.empty())
+     		s.pop();
+     	instack[x] = 0;
+     }
+     ```
+
+## 图论
+
+1. 常见图类型
+
+    > 没用，但是还是尽管写一下
+
+    稀疏图、二分图、欧拉图、有向无环图、连通图、强连通图、重连通图
+
+2. 二分图
+
+    一张图上的点分成两个集合，两个集合中的点不互相连边。
+
+    **不存在奇环。**
+
+    判断方法：染色法
+
+    > 深搜或者广搜，每次对边 $(u, v)$，将 $v$ 染成与 $u$ 不同的颜色。如果 $v$ 染了和 $u$ 一样的颜色，那么这就不是二分图。
+    >
+    > 最终如果没有异常，就是二分图。
+    >
+    > ```cpp
+    > bool dfs(int x, int c)
+    > {
+    > 	graphColor[x] = c;
+    > 	for (auto i : G[x])
+    > 	    if (color[i] == c)
+    > 	        return false;
+    > 		if (color[i] == 0 && !dfs(i, -c))
+    > 	        return false;
+    >  	return true;
+    > }
+    > bool check()
+    > {
+    > 	for (int i = 1; i <= n; ++i)
+    >  		if (graphColor[i] == 0)
+    > 			if (!dfs(i, 1))
+    > 				return false;
+    > 	return true;
+    > }
+    > ```
+
+    **匹配**：边的集合。集合中的边两两没有公共顶点。
+
+    定义概念：匹配点、匹配边、未匹配点、非匹配边
+
+    **最大匹配**：一个图所有的匹配中含边数最多的匹配。
+
+    **完美匹配**：一个图的某个其中所有顶点都是匹配点的匹配。一定是最大匹配。
+
+    **匈牙利算法**：
+
+    > 定义概念：
+    >
+    > 交替路：从一个未匹配点出发，依次经过非匹配边，匹配边所形成的路径。
+    >
+    > 增广路：从一个未匹配点出发，走交替路，如果途径另一个未匹配点（除出发点），则这条交替路称为增广路。在增广路中，**保证非匹配边比匹配边多一条**。可以用于**改进匹配**。
+    >
+    > 改进匹配：将一条增广路中的所有匹配边和非匹配边互换。
+
+    **匈牙利树**：一般由 BFS 构造，从一个未匹配点出发由**交替路**运行 BFS，要求**所有的叶子节点均为匹配点**。
+
+    构造：
+
+    ```cpp
+    class Hungarian
+    {
+        // 邻接表存图
+        // 不爱用，但是现在还看不懂，暂且先这么用着
+        struct Edge
+        {
+            int from, to, val;
+            Edge(int f, int t, int v)
+            {
+                from(f), to(t), val(v);
+            }
+        }
+        
+        // G[i] 存储从顶点 i 出发的边的编号
+        vector<int> G[maxn];
+        vector<Edge> edges;
+        int numNodes, numLeft, numRight, numEdges;
+        int matching[maxn];
+        int check[maxn];
+        
+        bool dfs(int x)
+        {
+            for (auto i : G[x])
+            {
+                int v = edges[i].to;
+                if (!check[v]) // 检查 v 是否在交替路中
+                {
+                    check[v] = 1; // 若不在，把 v 放入交替路
+                    if (matching[v] == -1 || dfs(matching[v])) // 如果是未覆盖点，说明交替路为增广路，交换路径，返回成功
+                    {
+                        matching[v] == u, matching[u] = v;
+                        return true;
+                    }
+                }
+            }
+            return false; // 返回失败
+        }
+        
+        int hungarian_dfs()
+        {
+            int ans = 0;
+            memset(matching, -1, sizeof(matching));
+            for (int u = 0; u <= numLeft; ++u) // 扫描每一个左边未匹配点
+            {
+                if (matching[u] == -1)
+                    memset(check, 0, sizeof(check)) // 搜点
+                    	if (dfs(u))
+                            ++ans;
+            }
+            return ans;
+    	}
+        
+        /* ---------------- */
+        
+        queue<int> q;
+        int prev[maxn]; // bfs 中记录前一个节点，在 dfs 中用隐式栈实现
+        int hungarian_bfs() // 一般情况下就不要用了，根本想不起来
+        {
+            int ans = 0;
+            memset(matching, -1, sizeof(matching));
+            memset(check, -1, sizeof(check));
+            for (int i = 1; i <= numLeft; ++i)
+            {
+                if (matching[i] == -1)
+                {
+                    while (!q.empty())
+                        q.pop();
+                    q.push(i);
+                    prev[i] = -1;
+                    bool flag = false;
+                    while (!q.empty() && !flag)
+                    {
+                        int u = q.front();
+                        for (auto i : G[x])
+                        {
+                            if (flag)
+                            	break;
+                            int v = edges[i].to;
+                            if (check[v] != i)
+                            {
+                                check[v] = i;
+                                q.push(matching[v])
+                                    if (matching[v] >= 0) // 匹配点
+                                        prev[matching[v]] = u;
+                            }
+                            else // 找到未匹配点，变为增广路
+                            {
+                                flag = 1;
+                                int d = u, e = v;
+                                while (d != -1) // 迭代回去
+                                {
+                                    int t = matching[d];
+                                   	matching[d] = e;
+                                    matching[e] = d;
+                                    d = prev[d];
+                                    e = t;
+                                }
+                            }
+                        }
+                    }
+                    q.pop();
+                }
+                if (matching[i] != -1)
+                    ++ans;
+            }
+    		return ans;
+        }
+    }
+    ```
+
+    补充定义和定理：
+
+    **最大匹配数**：最大匹配的匹配边的数目
+
+    **最小点覆盖数**：选取最少的点，使任意一条边至少有一个端点被选择
+
+    **最大独立数**：选取最多的点，使任意所选两点均不相连
+
+    **最小路径覆盖数**：对于一个 DAG（有向无环图），选取最少条路径，使得每个顶点属于且仅属于一条路径。路径长可以为 0（即单个点）。
+
+    定理1：最大匹配数 = 最小点覆盖数（这是 Konig 定理）
+
+    定理2：最大匹配数 = 最大独立数
+
+    定理3：最小路径覆盖数 = 顶点数 - 最大匹配数
+
+3. 欧拉图
+
+    > 一笔画.jpg
+
+    通过图中所有边恰好一次且行遍所有顶点的通路称为欧拉通路。
+
+    通过图中所有边恰好一次且行遍所有顶点的回路称为欧拉回路。
+
+    具有欧拉回路的无向图或有向图称为欧拉图。
+
+    具有欧拉通路但不具有欧拉回路的无向图或有向图称为半欧拉图。
+
+    有向图也可以有类似的定义。
+
+    非形式化地讲，欧拉图就是从任意一个点开始都可以一笔画完整个图，半欧拉图必须从某个点开始才能一笔画完整个图。
+
+    性质：欧拉图中**所有顶点的度数都是偶数**。
+
+    判别：
+
+    - 无向图 $G$，$G$ 是欧拉图当且仅当 $G$ 是联通的且没有奇度顶点。
+    - 无向图 $G$，$G$ 是半欧拉图当且仅当 $G$ 是联通的且 $G$ 中恰有 $0$ 个或 $2$ 个奇度顶点。
+    - 有向图 $G$，$G$ 是欧拉图当且仅当 $G$ 的所有顶点属于同一个强连通分量且每个顶点的入度和出度相同。
+    - 有向图 $G$，$G$ 是半欧拉图当且仅当
+        - 如果将 $G$ 的所有有向边退化为无向边时，$G$ 的所有顶点属于同一个连通分量。
+        - 最多只有一个顶点的出度与入度差绝对值为 $1$。
+        - 所有其他顶点的入度出度都相同。
+
+    **$\texttt{Hierholzer}$ 算法**：
+
+    算法流程为从一条回路开始，每次任取一条目前回路中的点，将其替换为一条简单回路，以此寻找到一条欧拉回路。如果从路开始的话，就可以寻找到一条欧拉路。
+
+    $ \begin{array}{ll} 1 & \textbf{Input. } \text{The edges of the graph } e , \text{ where each element in } e \text{ is } (u, v) \\ 2 & \textbf{Output. } \text{The vertex of the Euler Road of the input graph}.\\ 3 & \textbf{Method. } \\ 4 & \textbf{Function } \text{Hierholzer } (v) \\ 5 & \qquad circle \gets \text{Find a Circle in } e \text{ Begin with } v \\ 6 & \qquad \textbf{if } circle=\varnothing \\ 7 & \qquad\qquad \textbf{return } v \\ 8 & \qquad e \gets e-circle \\ 9 & \qquad \textbf{for} \text{ each } v \in circle \\ 10& \qquad\qquad v \gets \text{Hierholzer}(v) \\ 11& \qquad \textbf{return } circle \\ 12& \textbf{Endfunction}\\ 13& \textbf{return } \text{Hierholzer}(\text{any vertex}) \end{array} $
+
+    ```cpp
+    void Hierholzer(int x)
+    {
+    	for (int &i = cnt[x]; i < (int)G[x].size();)
+    	{
+    		if (G[x][i].exists)
+    		{
+    			edge e = G[x][i];
+    			G[x][i].exists = 0; // 删边
+    			G[e.to][e.revref].exists = 0; // 删边
+    			++i;
+    			Hierholzer(e.to); // 查询
+    		}
+    		else
+    			++i;
+    	}
+    	ans.push(x); // 入队
+    }
+    ```
+
+4. 最小生成树
+
+    $\texttt{Kruskal}$ 天下第一。
+
+    选边，每次选择权值最小的边，用并查集判环，直到选上了 $n - 1$ 条边。
+
+    先简单粘个去年写的板子罢。
+
+    ```cpp
+    void kruskal(){	sort(e + 1, e + m + 1);	for (int i = 1, u, v; i <= m; ++i)	{		u = find(e[i].from);		v = find(e[i].to);		if (u == v)			continue;		ans += e[i].val;		fa[v] = u;		if (++cnt == n - 1)			break;	}}
+    ```
+
+5. 次小生成树
+
+    $O(n ^ 2 + m)$ 解法。
+
+    求出原图最小生成树，记录权值之和为 $MinST$，枚举添加**每条不在最小生成树上的边 $(u, v)$**，加上以后一定会形成一个**环**，找到环上**除了 $(u, v)$ 以外权值最大的边**，删除以后计算当前生成树的权值之和。取所有枚举修改的生成树权值之和的最小值，就是次小生成树。
+
+    具体实现时，从每个节点 $i$ 遍历整个最小生成树，定义 $F[j]$ 为从 $i$ 到 $j$ 的路径上的最大边的权值。遍历图求出 $F[j]$ 的值，对于添加每条不在最小生成树中的边 $e = (i, j)$，新的生成树权值之和就是 $MinST + w _ e - F[j]$，记录最小值，则为次小生成树。
+
+6. 最短路
+
+    > 死了啦，都是你害的，拜托。
+
+    简单粘个 $\texttt{Dijkstra}$ 的板子。
+
+    ```cpp
+    #define maxn 200005struct edge { int to, next, val; } e[500005];int cnt, head[maxn], dis[maxn], vis[maxn], n, m, s;struct node {    int num, dis;    bool operator< (const node &x) const { return dis > x.dis; /* 注意大于号 */ }	node(int x, int y) { num = x, dis = y; }};priority_queue<node> q;void dijkstra(){    memset(dis, 0x3f, sizeof(dis));    dis[s] = 0;    q.push(node(s, 0));    while (!q.empty())    {        int x = q.top().num;        q.pop();        if (vis[x]) // 注意判断访问的节奏            continue;        vis[x] = 1;        for (int i = head[x]; i; i = e[i].next)            if (dis[e[i].to] > dis[x] + e[i].val)            {                dis[e[i].to] = dis[x] + e[i].val;                q.push(node(e[i].to, dis[e[i].to]));            }    }}
+    ```
+
+    粘一个 $\texttt{SPFA}$ 用来判负环。
+
+    ```cpp
+    struct edge {  int v, w;};vector<edge> e[maxn];int dis[maxn], cnt[maxn], vis[maxn];queue<int> q;bool spfa(int n, int s) {	memset(dis, 63, sizeof(dis));	dis[s] = 0, vis[s] = 1;	q.push(s);	while (!q.empty()) {		int u = q.front();		q.pop(), vis[u] = 0;		for (auto ed : e[u]) {			int v = ed.v, w = ed.w;			if (dis[v] > dis[u] + w) {				dis[v] = dis[u] + w;				cnt[v] = cnt[u] + 1;  // 记录最短路经过的边数				if (cnt[v] >= n) return false;				// 在不经过负环的情况下，最短路至多经过 n - 1 条边				// 因此如果经过了多于 n 条边，一定说明经过了负环				if (!vis[v]) q.push(v), vis[v] = 1;			}		}	}  	return true;}
+    ```
+
+7. 单源次短路
+
+    直接粘一段罢...
+
+    > 次短路径可以看作是 $k$ 短路径问题的一种特殊情况，求 $k$ 短路径有 $\texttt{Yen}$ 算法等较为复杂的方法，对于次短路径，可以有更为简易的方法。下面介绍一种求两个顶点之间次短路径的解法。
+    >
+    > 我们要对一个有向赋权图（无向图每条边可以看作两条相反的有向边）的顶点 $S$ 到 $T$ 之间求次短路径，首先应求出 $S$ 的单源最短路径。遍历有向图，标记出可以在最短路径上的边，加入集合 $K$。然后枚举删除集合 $K$ 中每条边，求从 $S$ 到 $T$ 的最短路径，记录每次求出的路径长度值，其最小值就是次短路径的长度。
+    >
+    > 在这里我们以为次短路径长度可以等于最短路径长度，如果想等，也可以看作是从 $S$ 到  $T$ 有不止一条最短路径。如果我们规定求从 $S$ 到 $T$ 大于最短路径长度的次短路径，则答案就是每次删边后大于原最短路径的 $S$ 到 $T$ 的最短路径长度的最小值。
+    >
+    > 用 $\texttt{Dijkstra}$ + 堆求单源最短路径，则每次求最短路径时间复杂度为 $O(n \log (n + m) + m)$，所以总的时间复杂度为 $O(nm \log (n + m) + m ^ 2)$。该估计是较为悲观的，因为一般来说，在最短路径上的边的条数要远远小于 $m$，所以实际效果要比预想的好。
+
+    简单来说就是最短路上删边然后查询。
+
+8. 全源最短路
+
+    优先考虑维护 $n$ 次 $\texttt{Dijkstra} \rightarrow O(nm \log m)$ ，如果是稠密图考虑维护 $\texttt{Floyd} \rightarrow O(n ^ 3)$。
+
+    补充：$\texttt{Johnson}$ 全源最短路 $\rightarrow O(nm \log m)$
+
+    > 无负环，可有负边。
+    >
+    > 1. 新建一个虚拟节点（标号为 $0$），从这个点向其他所有点连接一条边权为 $0$ 的边。
+    >
+    > 2. 使用 $\texttt{Bellman-Ford}$ 求出从 $0$ 号点到其他所有点的最短路，记为 $h _ i$。
+    > 3. 假如存在一条从 $u$ 点到 $v$ 点，边权为 $w$ 的边，将该边的边权设置为 $w + h _ u - h _ v$。
+    > 4. 跑 $n$ 次 $\texttt{Dijkstra}$。
+    >
+    > *\*重新定义零势能面\**
+
+9. 传递闭包
+
+    ![](https://img-blog.csdn.net/20170409190428811?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd3p3MTM3NjEyNDA2MQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+
+    考虑 $\texttt{Floyd}$。
+
+10. 拓扑排序
+
+    查入度，维护一个 `queue` 存储所有入度为 $0$ 的点。
+
+11. $\texttt{LCA}$
+
+     > 1. 预处理 $\log _ 2$
+     > 2. 读入数据，建树
+     > 3. $\texttt{DFS}$，处理出节点 $x$ 的深度 $depth$ 和 $2 ^ 0 \sim 2 ^ n$ 的父亲。 $(n \geq \log _ 2 depth)$
+     > 4. 回答询问。对于每组询问 $(u, v)$，首先让二者跳到同一高度，然后倍增找父亲
+
+     ```cpp
+    #include <bits/stdc++.h>
+    using namespace std;
+    
+    #define lint long long
+    #define rep(_, __, ___) for (int _ = __; _ <= ___; ++_)
+    const int maxn = 5e5 + 5;
+    
+    struct node 
+    {
+    	int to, next;
+    } e[maxn << 1];
+    
+    int head[maxn], cnt, n, m, s;
+    int depth[maxn], fa[maxn][22], lg[maxn];
+    
+    void addEdge(int u, int v)
+    {
+    	e[++cnt].to = v;
+    	e[cnt].next = head[u];
+    	head[u] = cnt;
+    }
+    
+    void dfs(int x, int prev)
+    {
+    	// calculate the relationshop between x and prev
+    	fa[x][0] = prev;
+    	depth[x] = depth[prev] + 1;
+    
+    	// calculate all the father
+    	rep(i, 1, lg[depth[x]] + 1)
+    		fa[x][i] = fa[fa[x][i - 1]][i - 1];
+    	
+    	// search sons of x
+    	for (int i = head[x]; i; i = e[i].next)
+    		if (e[i].to != prev)
+    			dfs(e[i].to, x);
+    }
+    
+    int LCA(int x, int y)
+    {
+    	if (depth[x] < depth[y])
+    		swap(x, y);
+    
+    	// let x jump to the same level as y
+    	while (depth[x] > depth[y])
+    		x = fa[x][lg[depth[x] - depth[y]]];
+    
+    	if (x == y)
+    		return x;
+    	
+    	// try to find all the possibility to let x and y jump to the higher level
+    	for (int k = lg[depth[x]]; k >= 0; --k)
+    		if (fa[x][k] != fa[y][k])
+    			x = fa[x][k], y = fa[y][k];
+    	
+    	// at this moment, x and y are two of the sons of a node 
+    	// so return that node
+    	return fa[x][0];
+    }
+    
+    void calcLog2()
+    {
+    	rep(i, 1, 500000)
+    		lg[i] = lg[i - 1] + (1 << lg[i - 1] == i);
+    	rep(i, 1, 500000)
+    		--lg[i];
+    }
+    
+    int main() 
+    {
+    	// for any x range from 1 to maxn, calculate log2(x)
+    	calcLog2();
+    	
+    	// build graph/tree
+    	scanf("%d%d%d", &n, &m, &s);
+    	rep(i, 1, n - 1)
+    	{
+    		int u, v;
+    		scanf("%d%d", &u, &v);
+    		addEdge(u, v);
+    		addEdge(v, u);
+    	}
+    
+    	// search the tree and find out every node's depth and father
+    	dfs(s, 0);
+    
+    	// answer the queries
+    	while (m--)
+    	{
+    		int u, v;
+    		scanf("%d%d", &u, &v);
+    		printf("%d\n", LCA(u, v));
+    	}
+    
+    	return 0;
+    }
+     ```
+
+12. 强连通分量、割点、割边
+
+      概念不予解释，贴个 $\texttt{Tarjan}$ 板子完事。
+
+      ```cpp
+    // 强连通分量#define maxnint dfn[maxn], low[maxn], index, inStack[maxn];int scc[maxn], sccCount;int sccSize[maxn];stack<int> s;void tarjan(int u){    low[u] = dfn[u] = ++index;    s.push(u);    inStack[u] = 1;    for (int i = head[u]; i; i = e[i].next)    {        int v = e[i].to;        if (!dfn[v])            tarjan(v), low[u] = min(low[u], low[v]);        else if (inStack[v])            lowu = min(low[u], dfn[v]);    }    if (dfn[u] == low[u])    {        ++sccCount;        while (s.top() != u)        {            scc[s.top()] = sccCount;            sccSize[sccCount]++;            s.pop();        }    }}// 割点// 如果 u 是割点，那剩下的未被访问点中至少有一个点在不经过点k的情况下无论如何也回不到已访问的点// 查一个点能否不通过点 u 回到时间戳更低的点void tarjan(int u){    dfn[u] = low[u] = ++index;    int col = 0;    for (int i = head[u]; i; i = e[i].next)    {        int v = e[i].to;        if (!dfn[v])        {            ++col;            tarjan[v];            low[u] = min(low[u], low[v]);            if ( (u == root && col > 1) || (u != root && dfn[u] <= low[v]) )                cut[u] = 1;        }        else            low[u] = min(low[u], dfn[v]);    }}// 割边void tarjan(int u){    dfn[u] = low[u] = ++index;    for (int i = head[u]; i; i = e[i].next)    {        if (i == (f[u] ^ 1)) // 查反向边，染色            continue;        int v = e[i].to;        if (!dfn[v])        {            f[v] = i;            tarjan[v];            low[u] = min(low[u], low[v]);            if (dfn[u] < low[v])				++ans, cut[i] = cut[i ^ 1] = 1;        }        else            low[u] = min(low[u], dfn[v]);    }}
+      ```
+
+13. 缩点
+
+     $\texttt{Tarjan}$ 跑完以后重新建图。
+
+## 字符串
+
+1. 哈希
+
+    概念太简单，不写了。
+
+    贴个双哈希的板子：
+
+    ```cpp
+    #define lint long longconst lint base1 = 131;const lint base2 = 131;const lint mod1 = 1e9 + 7;const lint mod2 = 1e9 + 9;struct HashNode{    lint hashValue1, hashValue2;    void makeHash1(string x)    {        lint ans = 0;        for (auto i : x)            ans = (ans * base1 + (lint) (i)) % mod1;        this->hashValue1 = ans;    }    void makeHash2(string x)    {        lint ans = 0;        for (auto i : x)            ans = (ans * base2 + (lint) (i)) % mod2;        this->hashValue2 = ans;    }    HashNode(string x)    {        makeHash1(x);        makeHash2(x);    }}
+    ```
+
+2. $\texttt{KMP}$
+
+    背。
+
+    ```cpp
+    int kmp[1000005], textLength, patternLength, ptr;
+    char text[1000005], pattern[1000005];
+    vector<int> ans;
+    
+    int main() 
+    {
+        scanf("%s", text + 1);
+        scanf("%s", pattern + 1);
+        textLength = strlen(text + 1);
+        patternLength = strlen(pattern + 1);
+        
+        // function: calculateBorder
+        for (int i = 2; i <= patternLength; ++i)
+        {
+            // 计算 pattern 的 border 长度
+            // border 定义：相同前后缀
+            // 例：pattern = "1145141919810114514"
+            // border = "114514"
+            // 这里的 kmp[i] 直接就是 border 长度，所以不排除会出现 0 的可能
+            // 在上一次求 border 完成之后，ptr 停留在上一次 border 长度的位置
+            while (ptr && pattern[i] != pattern[ptr + 1])
+                // 后面出现的一个字符要不然组成的 border 是前面一个 + 1
+                // 要不然就在前面一个中
+                // 由于 border 的出现只有循环节的可能
+                // 例："abcabcdddabcabc -> a <- bc"
+                // 在匹配到指针所指 'a' 的时候，只有可能出现答案在循环节里。
+                // 所以从循环节往前跳
+                ptr = kmp[ptr];
+            // 判相等
+            if (pattern[ptr + 1] == pattern[i])
+                ++ptr;
+            kmp[i] = ptr;
+        }
+        
+        // KMP
+        ptr = 0;
+        // ptr 在 pattern 上跑
+        for (int i = 1; i <= textLength; ++i)
+        {
+            while (ptr && text[i] != pattern[ptr + 1])
+                ptr = kmp[ptr];
+            if (pattern[ptr + 1] == text[i])
+                ++ptr;
+            // 在当前点匹配到了全部模式串
+            if (ptr == patternLength)
+            {
+                ans.push_back(i - patternLength + 1);
+                ptr = kmp[ptr];
+            }
+        }
+        
+        // ans 返回匹配点出现的位置
+        // kmp[i] 对应 a[i, patternLength] 的 border 长度 
+    }
+    ```
+
+3. $\texttt{Trie}$ 
+
+    同数据结构。
+
+4. $\texttt{AC}$ 自动机
+
+    > 背不过.jpg
+
+    $\texttt{KMP + Trie}$。
+
+    $\texttt{AC}$ 自动机的失配指针 `fail` 指向当前状态的最长后缀状态。
+
+    ![](https://z3.ax1x.com/2021/10/11/5VuoPe.png)
+
+    粘个代码罢。
+
+    ```cpp
+    #include <bits/stdc++.h>
+    using namespace std;
+    const int N = 156, L = 1e6 + 6;
+    namespace AC {
+    const int SZ = N * 80;
+    int tot, tr[SZ][26];
+    int fail[SZ], idx[SZ], val[SZ];
+    int cnt[N];  // 记录第 i 个字符串的出现次数
+    void init() {
+      memset(fail, 0, sizeof(fail));
+      memset(tr, 0, sizeof(tr));
+      memset(val, 0, sizeof(val));
+      memset(cnt, 0, sizeof(cnt));
+      memset(idx, 0, sizeof(idx));
+      tot = 0;
+    }
+    void insert(char *s, int id) {  // id 表示原始字符串的编号
+      int u = 0;
+      for (int i = 1; s[i]; i++) {
+        if (!tr[u][s[i] - 'a']) tr[u][s[i] - 'a'] = ++tot;
+        u = tr[u][s[i] - 'a'];  // 转移
+      }
+      idx[u] = id;  // 以 u 为结尾的字符串编号为 idx[u]
+    }
+    queue<int> q;
+    void build() {
+      for (int i = 0; i < 26; i++)
+        if (tr[0][i]) q.push(tr[0][i]);
+      while (q.size()) {
+        int u = q.front();
+        q.pop();
+        for (int i = 0; i < 26; i++) {
+          if (tr[u][i]) {
+            fail[tr[u][i]] =
+                tr[fail[u]][i];  // fail数组：同一字符可以匹配的其他位置
+            q.push(tr[u][i]);
+          } else
+            tr[u][i] = tr[fail[u]][i];
+        }
+      }
+    }
+    int query(char *t) {  // 返回最大的出现次数
+      int u = 0, res = 0;
+      for (int i = 1; t[i]; i++) {
+        u = tr[u][t[i] - 'a'];
+        for (int j = u; j; j = fail[j]) val[j]++;
+      }
+      for (int i = 0; i <= tot; i++)
+        if (idx[i]) res = max(res, val[i]), cnt[idx[i]] = val[i];
+      return res;
+    }
+    }  // namespace AC
+    int n;
+    char s[N][100], t[L];
+    int main() {
+      while (~scanf("%d", &n)) {
+        if (n == 0) break;
+        AC::init();  // 数组清零
+        for (int i = 1; i <= n; i++)
+          scanf("%s", s[i] + 1), AC::insert(s[i], i);  // 需要记录该字符串的序号
+        AC::build();
+        scanf("%s", t + 1);
+        int x = AC::query(t);
+        printf("%d\n", x);
+        for (int i = 1; i <= n; i++)
+          if (AC::cnt[i] == x) printf("%s\n", s[i] + 1);
+      }
+      return 0;
+    }
+    ```
+
+    
+
+5. 扩展 $\texttt{KMP}$ ($\texttt{Z}$ 函数)
+
+    模板问题：
+
+    > 给予两个字符串 $s, t$， 输出 $s$ 的每一个后缀与 $t$ 的最长公共前缀。
+
+    待补。
+
+    不补了，反正不会考.jpg
+
+## 搜索
+
+> 没啥可讲的，简单写几点。
+
+- **剪枝**：剪枝。
+- **记忆化搜索**：记忆化搜索。
+- **启发式搜索**：又称 $\texttt{A} ^ *$，采用估价函数 $h(x)$ 和距离起点的代价 $g(x)$，用 $F(x) = h(x) + g(x)$。
+- **双向宽度优先搜索**：从起终点同时 $\texttt{BFS}$，直到产生重叠。
+- **迭代加深搜索**：每次限制搜索深度，相当于在 $\texttt{DFS}$ 和 $\texttt{BFS}$ 取一个折中。
+- **搜索对象的压缩存储**：不知道啥意思，先暂时理解为状压。
+
+## DP
+
+1. 树上 $\texttt{DP}$
+
+    在树上转移。
+
+2. 状压 $\texttt{DP}$
+
+    题目的数据范围一般很明显。
+
+    考虑将一个数用来表示状态，或者用 `bitset` 维护。
+
+3. 区间 $\texttt{DP}$，背包 $\texttt{DP}$，线性 $\texttt{DP}$
+
+4. Trick
+
+    - 考虑记录的信息，一般都可以出来。
+    - 配合记忆化搜索、剪枝。
+    - 滚动数组优化。
+    - 多重背包考虑二进制拆分。
+    - 以大小为阶段的区间 $\texttt{DP}$ 考虑笛卡尔树优化。
+    - 前缀和、差分优化。
+    - 矩阵加速。
+
+## 数学
+
+### 初等数论
+
+1. 同余
+
+2. 欧拉定理和欧拉函数
+
+    **欧拉函数**：$\varphi(n) = 1 \sim n$ 中和 $n$ 数值的数的数目。
+
+    $n = p _ 1 ^ {a _ 1} p _ 2 ^ {a _ 2} ... p _ k ^ {a _ k} \rightarrow \varphi(n) = n(1 - \dfrac{1}{p _ 1}) (1 - \dfrac{1}{p _ 2}) ... (1 - \dfrac{1}{p _ k})$
+
+    **欧拉定理**：若 $(a, m) = 1$，则 $a ^ {\varphi(m)} \equiv 1 \pmod{m}$。
+
+    求欧拉函数值：
+
+    ```cpp
+    inline int phi(int n)
+    {
+        int ans = n;
+        for (int i = 2; i * i <= n; ++i)
+            if (n % i == 0)
+                ans -= ans / i;
+        if (n > 1)
+            ans -= ans / n;
+        return ans;
+    }
+    ```
+
+3. 费马小定理
+
+    对 $p$ 为质数，$a$ 为任意自然数，有 $a ^ { p - 1} \equiv 1 \pmod{p}$。
+
+    用于处理任何可能的数论问题（暴论）
+
+4. 威尔逊定理
+
+    $(p - 1) ! \equiv -1 \pmod{p}$
+
+5. 裴蜀定理
+
+    处理最大公约式。
+
+    线性丢番图方程 $ax + by = m$ 有解当且仅当 $(a, b) | m$。
+
+    用辗转相除处理。
+
+6. **逆元**
+
+    重量级。
+
+    对于 $a$ ，存在 $x$ 满足 $ax \equiv 1 \pmod{p}$，则称 $x$ 为 $a$ 的逆元，既 $x = a ^ {-1}$。
+
+    **求解方式**：
+
+    1. 扩展欧几里得
+
+        要求 $(\texttt{底数}, \texttt{模数}) = 1$
+
+        对逆元表达式做如下变换
+
+        $\begin{array}{ll}
+        a \cdot a ^ {-1} \equiv 1 \pmod{b} \\
+        a \cdot a ^ {-1} (\operatorname{mod} b) = 1 \\
+        a \cdot a ^ {-1} + b \cdot y = 1, y = [\dfrac{a}{b}]
+        \end{array}$
+
+        当 $(a, b) = 1$，满足如上条件，求解即可。
+
+        顺便附上一个 $\texttt{Extend GCD}$ 的代码。
+
+        ```cpp
+        int extendGCD(int a, int b, int &x, int &y)
+        {
+            if (b == 0)
+            {
+                x = 1, y = 0;
+                return a;
+            }
+        	int d = extendGCD(b, a % b, x, y);
+            int t = x;
+            x = y;
+            y = t - a / b * y;
+            return d;
+        }
+        ```
+
+    2. 费马小定理
+
+        **核心思想**：$a ^ {p - 2} \equiv a ^ {-1} \pmod p$
+
+        快速幂求解即可。
+
+    3. 线性求逆元
+
+        **这位更是重量级**。
+
+        <img src="https://imgs.itxueyuan.com/1470173-20191016002130177-1467732124.png" style="zoom:25%;" />
+
+        证明：
+
+        <img src="https://imgs.itxueyuan.com/1470173-20191016002144112-747331233.png" style="zoom:75%;" />
+
+        可以在 $O(n)$ 时间内求出 $n$ 个数的逆元。
+
+        如果询问特别多或者特别集中，可以考虑这种算法。
+
+        ```cpp
+        inv[1] = 1;
+        for (int i(2); i <= n; ++i)
+        	inv[i] = (lint) (p - p / i) * inv[p % i] % p;
+        ```
+
+7. 中国剩余定理
+
+    解决诸如以下问题：
+
+    $\begin{cases}
+    x \equiv a _ 1 \pmod {n _ 1} \\
+    x \equiv a _ 2 \pmod {n _ 2} \\
+    ...... \\
+    x \equiv a _ k \pmod {n _ k}
+    \end{cases}$
+
+    其中 $m _ 1 \sim m _ k$ 皆为质数。
+
+    计算流程：
+
+    1. 计算所有模数的积 $n$
+    2. 对于第 $i$ 个方程：
+        1. 计算 $m _ i = \dfrac{n}{n _ i}$
+        2. 计算 $m _ i$ 在 $n _ i$ 下的逆元 $m _ i ^ {-1}$
+        3. 计算 $c _ i = m _ i \cdot m _ i ^ {-1}$
+    3. 方程唯一解为 $x = \sum _ {i = 1} ^ {k} a _ i \cdot c _ i \pmod {n}$
+
+    本质上每个方程就是把其他的条件全部满足了之后再加上结果。
+
+    板子：
+
+    ```cpp
+    #define lint long long
+    lint crt(int k, lint* a, lint* r) // ans \equiv a[i] mod r[i]
+    {
+        lint n = 1, ans = 0;
+        for (int i = 1; i <= k; ++i)
+            n = n * r[i];
+        for (int i = 1; i <= k; ++i)
+        {
+            lint m = n / r[i], b, y;
+            extendGCD(m, r[i], b, y); // b * m mod r[i] = 1
+            ans = (ans + a[i] * m * b % n) % n;
+        }
+        return (ans % n + n) % n;
+    }
+    ```
+
+### 组合数学
+
+> 没啥说的，可劲造就完了。
+
+整理几个要点：
+
+- 可重集排列组合
+
+    > 定义 $S = \{n _ 1 a _ 1, n _ 2 a _ 2, \cdots , n _ k a _ k\}$。
+    >
+    > 从中有序的选出 $r$ 个元素，成为 $S$ 的一个 $r$-可重排列。
+    >
+    > 定理 $1$：假设多重集 $S = \{\infty a _ 1, \infty a _ 2, \cdots \infty a _ k\}$，则  $S$  的  $r$-可重排列为 $k ^ r$。
+    >
+    > 推论 $1$：假设多重集 $S = \{n _ 1 a _ 1, n _ 2 a _ 2, \cdots n _ k a _ k\}$，且 $\forall i \in [1, k], n _ i \geq r$ ，则  $S$  的  $r$-可重排列为 $k ^ r$。
+    >
+    > 定理 $2$：假设 $S = \{n _ 1 a _ 1, n _ 2 a _ 2, \cdots , n _ k a _ k\}, n = \sum n _ i$，则 $S$ 的全排列数为 $\dfrac{n!}{n _ 1 n _ 2 \cdots n _ k}$。
+    >
+    > 证明：先求出总的全排列 $n!$，再除去每一种元素的重复度。
+    >
+    > 其余情况：没有一般的求解公式。
+    >
+    > 从中选取 $r$ 个元素 $b _ 1, b _ 2, \cdots, b _ r$，允许重复的组合记为 $\overline{C} _ k ^ r$。
+    >
+    > 定理 $1$：从 $S = \{\infty a _ 1, \infty a _ 2, \cdots \infty a _ k\}$ 中选出 $r$ 个元素作可重组合，其组合数为 $C(k + r - 1, r)$。
+    >
+    > 推论 $1$：设 $S = \{n _ 1 a _ 1, n _ 2 a _ 2, \cdots n _ k a _ k\}$，若 $r \geq k$ 且 $\forall i \in [1, k], n _ i > r$，则 $S$ 中的每种元素至少取一个的 $r$-可重组合数为 $C _ {r - 1} ^ {k - 1}$。
+    >
+    > 其余情况：没有一般的求解公式。
+
+- 错排列、圆排列
+
+    > **错排列**：现有 $n$ 个物品，要求重新排列，使得每个物品**都**不在他原来的位置上。
+    >
+    > 将错排数记为 $D(n)$，考虑递推。
+    >
+    > 情况 $1$：新增加一个物品 $m$，将其与原有任意一个物品交换，$(n - 1) \times D(n - 2)$。
+    >
+    > 情况 $2$：考虑原有物品不回到 $m$ 的位置上，将 $m$ 原位置看成 $k$ 的位置，剩下的进行错排。
+    >
+    > $D(n) = (n - 1) \times [D(n - 1) + D(n - 2)]$
+    >
+    > 起始状态：$D(1) = 0, D(2) = 1$
+    >
+    > $D(n) = n! \cdot (\dfrac{1}{2!} - \cdots + (-1) ^ n \dfrac{1}{n!})$
+    >
+    > **圆排列**：一组元素排成一个圆。
+    >
+    > 若有 $n$ 个元素，则计算公式为 $(n - 1)!$。
+    >
+    > 考虑 $\dfrac{A _n ^ n}{n}$，即对全排列删去环的情况。
+
+- 鸽巢原理
+
+- 二项式定理
+
+- 容斥
+
+    > 对 $n$ 个集合 $A _ 1, A _ 2 \cdots A _ n$，
+    >
+    > $|A _ 1 \cup A _ 2 \cup \cdots \cup A _ n| = \sum _ {1 \leq i \leq n} |A _ i| - \sum _ {1 \leq i \leq j \leq n} |A _ i \cup A _ j| + \cdots + (-1) ^ n |A _ 1 \cap A _ 2 \cap \cdots \cap A _ n|$
+    >
+    > 记 $\bigcup_{i=1}^{n}A_i=A_1\cup A_2\cup ...\cup A_n$，$\bigcap_{i=1}^{n}A_i=A_1\cap A_2\cap...\cap A_n$ ，
+    >
+    > 有 $|\bigcup_{i=1}^{n}A_i|=\sum_{k=1}^{n}(-1)^{k-1}\cdot \sum_{1\le i_1<i_2<...<i_k\le n}|\bigcap_{j=1}^{k}A_{i_{j}}|$
+
+- 卡特兰数
+
+    >$C _ 0 = C _ 1 = 1$
+    >
+    >$C _ n = \sum _ {k = 0} ^ {n - 1} C _ k C _ {n - k}$
+    >
+    >$C _ n = \dfrac{4n - 2}{n + 1} C _ {n - 1}$
+    >
+    >$C _ n = \dfrac{1}{n + 1} C _ {2n} ^ n = C _ {2n} ^ n - C _ {2n} ^ {n - 1}$
+    >
+    >应用场景：
+    >
+    >1. 满足 $C _ n = C _ {2n} ^ n - C _ {2n} ^ {n - 1}$
+    >
+    >    > 在 $n \times n$ 的网格中，一开始在 $(0, 0)$ 处，每次可以向上走一格或者向右走一格，在任一时刻，向右走的次数不能少于向上走的次数，问有多少种合法路径？
+    >
+    >2. 满足 $C _ n = \sum _ {k = 0} ^ {n - 1} C _ k C _ {n - k}$
+    >
+    >    > 把一个 $n$ 层的矩形阶梯分为 $n$ 个矩形的方法数？
+    >
+    >3. ① $n$ 个结点的构成的二叉树种类
+    >
+    >    ② 与 $1, 2, 3, \cdots, n$ 的入栈序列对应的出栈序列种类数
+
+### 线性代数
+
+**这位是最重量级的。**
+
+提高组主要考矩阵，列几个要点。
+
+- 特殊矩阵：稀疏矩阵、三角矩阵、对称矩阵
+- 矩阵初等变换
+- 矩阵加减乘和转置运算
+- 线性方程组的高斯消元
+
+</xmp>
+
+
+<script src="strapdown/v/0.2/strapdown.js"></script>
+
+<div>
+    <!-- Button Here -->
+    <!-- Fixed Button 2021-04-18-->
+    <a class="button" href="../archives.html" style="width: 40%; border-radius: 8px; margin-left: 30%; margin-top: 100px;  margin-bottom: 40px">
+        <p style="font-size: 2vmax;">
+            <<< Return to archive list </p>
+    </a>
+</div>
+
+</html>
